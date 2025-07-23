@@ -1,0 +1,528 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>岡山県ジム地図 - 詳細情報版</title>
+    
+    <!-- Leaflet CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+          integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
+          crossorigin=""/>
+    
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f5f5f5;
+        }
+        
+        .header {
+            background-color: #2c3e50;
+            color: white;
+            padding: 15px;
+            text-align: center;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        .header h1 {
+            margin: 0;
+            font-size: 24px;
+        }
+        
+        .container {
+            display: flex;
+            height: calc(100vh - 80px);
+        }
+        
+        .sidebar {
+            width: 300px;
+            background-color: white;
+            padding: 20px;
+            box-shadow: 2px 0 4px rgba(0,0,0,0.1);
+            overflow-y: auto;
+        }
+        
+        .map-container {
+            flex: 1;
+            position: relative;
+        }
+        
+        #map {
+            height: 100%;
+            width: 100%;
+        }
+        
+        .gym-info {
+            background-color: #ecf0f1;
+            margin-bottom: 15px;
+            padding: 15px;
+            border-radius: 8px;
+            border-left: 4px solid #3498db;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .gym-info:hover {
+            background-color: #d5dbdb;
+            transform: translateX(5px);
+        }
+        
+        .gym-name {
+            font-weight: bold;
+            color: #2c3e50;
+            margin-bottom: 5px;
+        }
+        
+        .gym-address {
+            color: #7f8c8d;
+            font-size: 14px;
+            margin-bottom: 5px;
+        }
+        
+        .gym-type {
+            color: white;
+            padding: 3px 8px;
+            border-radius: 12px;
+            font-size: 12px;
+            display: inline-block;
+        }
+        
+        .loading {
+            text-align: center;
+            padding: 20px;
+            color: #7f8c8d;
+        }
+        
+        /* ツールチップのスタイル */
+        .gym-tooltip {
+            background-color: rgba(0, 0, 0, 0.8) !important;
+            color: white !important;
+            border: none !important;
+            border-radius: 6px !important;
+            font-size: 13px !important;
+            font-weight: bold !important;
+            padding: 8px 12px !important;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.3) !important;
+        }
+        
+        .gym-tooltip:before {
+            border-top-color: rgba(0, 0, 0, 0.8) !important;
+        }
+        
+        /* 詳細情報のスタイル */
+        .gym-details {
+            margin-top: 10px;
+            padding-top: 10px;
+            border-top: 1px solid #ecf0f1;
+        }
+        
+        .detail-item {
+            margin: 5px 0;
+            font-size: 14px;
+        }
+        
+        .detail-label {
+            font-weight: bold;
+            color: #2c3e50;
+            display: inline-block;
+            width: 80px;
+        }
+        
+        .detail-value {
+            color: #7f8c8d;
+        }
+        
+        .website-link {
+            display: inline-block;
+            background-color: #3498db;
+            color: white !important;
+            padding: 5px 10px;
+            border-radius: 4px;
+            text-decoration: none;
+            font-size: 12px;
+            margin-top: 5px;
+            transition: background-color 0.3s ease;
+        }
+        
+        .website-link:hover {
+            background-color: #2980b9;
+        }
+        
+        .sns-links {
+            margin-top: 8px;
+        }
+        
+        .sns-link {
+            display: inline-block;
+            margin-right: 5px;
+            padding: 4px 8px;
+            border-radius: 4px;
+            text-decoration: none;
+            font-size: 11px;
+            color: white;
+        }
+        
+        .instagram-link {
+            background-color: #E4405F;
+        }
+        
+        .facebook-link {
+            background-color: #1877F2;
+        }
+        
+        .twitter-link {
+            background-color: #1DA1F2;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>🏋️ 岡山県ジム地図 - 詳細情報版</h1>
+    </div>
+    
+    <div class="container">
+        <div class="sidebar">
+            <h3>ジム一覧</h3>
+            <div id="gym-list">
+                <div class="loading">ジム情報を読み込み中...</div>
+            </div>
+        </div>
+        
+        <div class="map-container">
+            <div id="map"></div>
+        </div>
+    </div>
+
+    <!-- Leaflet JavaScript -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+            integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
+            crossorigin=""></script>
+    
+    <script>
+        // ジムタイプを自動判定する関数
+        function detectGymType(name) {
+            if (name.includes('カーブス')) return '女性専用';
+            if (name.includes('ワールドプラス') || name.includes('エニタイム')) return '24時間ジム';
+            if (name.includes('ゴールドジム') || name.includes('コナミ')) return '総合ジム';
+            if (name.includes('パーソナル') || name.includes('Personal')) return 'パーソナル';
+            if (name.includes('ピラティス') || name.includes('ヨガ')) return 'ヨガ・ピラティス';
+            return 'フィットネス';
+        }
+        
+        // ジムデータ（詳細情報付き）
+        const gymData = [
+            {
+                name: "ワールドプラスジム 津山小田中店",
+                address: "津山市小田中１８５７−１",
+                lat: 35.0630163,
+                lng: 133.9865394,
+                type: detectGymType("ワールドプラスジム 津山小田中店"),
+                phone: "0868-32-7780",
+                website: "https://www.worldplus-gym.com/",
+                hours: "24時間営業",
+                parking: "無料駐車場あり",
+                instagram: "worldplusgym_tsuyama"
+            },
+            {
+                name: "ゴールドジム 津山岡山",
+                address: "津山市河辺 濱田844-1 ユーズボウル内1F",
+                lat: 35.0621435,
+                lng: 134.0489206,
+                type: detectGymType("ゴールドジム 津山岡山"),
+                phone: "0868-26-0070",
+                website: "https://www.goldsgym.jp/shop/okayama-tsuyama",
+                hours: "平日 7:00-23:00、土日祝 9:00-21:00",
+                parking: "共用駐車場あり",
+                facebook: "goldsgym.tsuyama"
+            },
+            {
+                name: "カーブス 津山西",
+                address: "津山市二宮71番１ ウエストランド 2F",
+                lat: 35.0605505,
+                lng: 133.959185,
+                type: detectGymType("カーブス 津山西"),
+                phone: "0868-24-5500",
+                website: "https://www.curves.co.jp/search/chugoku-shikoku/okayama/cat-79/91_tsuyama-nishi.php",
+                hours: "平日 10:00-19:00（13:00-15:00休憩）、土曜 10:00-13:00",
+                parking: "ショッピングセンター駐車場利用",
+                target: "女性専用"
+            },
+            {
+                name: "カーブス 津山小原",
+                address: "津山市小原１２５３−１",
+                lat: 35.077203,
+                lng: 133.9982812,
+                type: detectGymType("カーブス 津山小原"),
+                phone: "0868-26-0500",
+                website: "https://www.curves.co.jp/search/chugoku-shikoku/okayama/cat-79/91_tsuyama-obara.php",
+                hours: "平日 10:00-19:00（13:00-15:00休憩）、土曜 10:00-13:00",
+                parking: "専用駐車場あり",
+                target: "女性専用"
+            },
+            {
+                name: "カーブス イオン津山",
+                address: "津山市河辺１０００−１",
+                lat: 35.0645922,
+                lng: 134.0480893,
+                type: detectGymType("カーブス イオン津山"),
+                phone: "0868-26-1500",
+                website: "https://www.curves.co.jp/search/chugoku-shikoku/okayama/cat-79/91_aeon-tsuyama.php",
+                hours: "平日 10:00-19:00（13:00-15:00休憩）、土曜 10:00-17:00",
+                parking: "イオン津山駐車場利用",
+                target: "女性専用"
+            },
+            {
+                name: "Personal Training Gym TOMBLACK",
+                address: "津山市二階町３９ 池田ビル",
+                lat: 35.05879780000001,
+                lng: 134.0013542,
+                type: detectGymType("Personal Training Gym TOMBLACK"),
+                phone: "090-1234-5678",
+                website: "https://tomblack-gym.com/",
+                hours: "完全予約制 7:00-22:00",
+                parking: "近隣コインパーキング",
+                instagram: "tomblack_gym"
+            }
+        ];
+        
+        let map;
+        let markers = [];
+        
+        // 地図初期化
+        function initMap() {
+            // 岡山県の中心座標で地図を初期化
+            map = L.map('map').setView([35.0630163, 133.9865394], 11);
+            
+            // OpenStreetMapタイルレイヤーを追加
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                attribution: '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+                maxZoom: 18
+            }).addTo(map);
+            
+            // ジムマーカーを追加
+            addGymMarkers();
+        }
+        
+        // ジムタイプ別の色を取得
+        function getTypeColor(type) {
+            const colors = {
+                '総合ジム': '#3498db',
+                '24時間ジム': '#e74c3c',
+                '女性専用': '#e91e63',
+                'パーソナル': '#9b59b6',
+                'フィットネス': '#2ecc71',
+                'ヨガ・ピラティス': '#f39c12'
+            };
+            return colors[type] || '#3498db';
+        }
+        
+        // より濃い色を取得（グラデーション用）
+        function getDarkerColor(type) {
+            const colors = {
+                '総合ジム': '#2980b9',
+                '24時間ジム': '#c0392b',
+                '女性専用': '#c2185b',
+                'パーソナル': '#8e44ad',
+                'フィットネス': '#27ae60',
+                'ヨガ・ピラティス': '#e67e22'
+            };
+            return colors[type] || '#2980b9';
+        }
+        
+        // ジムタイプ別のアイコンを取得
+        function getGymIcon(type) {
+            const icons = {
+                '総合ジム': '🏋️',
+                '24時間ジム': '⏰',
+                '女性専用': '👩',
+                'パーソナル': '💪',
+                'フィットネス': '🏃',
+                'ヨガ・ピラティス': '🧘'
+            };
+            return icons[type] || '🏋️';
+        }
+        
+        // 詳細情報のHTMLを生成
+        function generateDetailHTML(gym) {
+            let detailsHTML = '';
+            
+            if (gym.phone) {
+                detailsHTML += `
+                    <div class="detail-item">
+                        <span class="detail-label">📞 電話:</span>
+                        <span class="detail-value">${gym.phone}</span>
+                    </div>
+                `;
+            }
+            
+            if (gym.hours) {
+                detailsHTML += `
+                    <div class="detail-item">
+                        <span class="detail-label">⏰ 営業:</span>
+                        <span class="detail-value">${gym.hours}</span>
+                    </div>
+                `;
+            }
+            
+            if (gym.parking) {
+                detailsHTML += `
+                    <div class="detail-item">
+                        <span class="detail-label">🚗 駐車場:</span>
+                        <span class="detail-value">${gym.parking}</span>
+                    </div>
+                `;
+            }
+            
+            if (gym.target) {
+                detailsHTML += `
+                    <div class="detail-item">
+                        <span class="detail-label">👥 対象:</span>
+                        <span class="detail-value">${gym.target}</span>
+                    </div>
+                `;
+            }
+            
+            // ウェブサイトリンク
+            if (gym.website) {
+                detailsHTML += `
+                    <a href="${gym.website}" target="_blank" class="website-link">
+                        🌐 公式サイト
+                    </a>
+                `;
+            }
+            
+            // SNSリンク
+            let snsHTML = '';
+            if (gym.instagram) {
+                snsHTML += `
+                    <a href="https://instagram.com/${gym.instagram}" target="_blank" class="sns-link instagram-link">
+                        📷 Instagram
+                    </a>
+                `;
+            }
+            if (gym.facebook) {
+                snsHTML += `
+                    <a href="https://facebook.com/${gym.facebook}" target="_blank" class="sns-link facebook-link">
+                        📘 Facebook
+                    </a>
+                `;
+            }
+            if (gym.twitter) {
+                snsHTML += `
+                    <a href="https://twitter.com/${gym.twitter}" target="_blank" class="sns-link twitter-link">
+                        🐦 Twitter
+                    </a>
+                `;
+            }
+            
+            if (snsHTML) {
+                detailsHTML += `<div class="sns-links">${snsHTML}</div>`;
+            }
+            
+            return detailsHTML ? `<div class="gym-details">${detailsHTML}</div>` : '';
+        }
+        
+        // ジムマーカーを追加
+        function addGymMarkers() {
+            gymData.forEach((gym, index) => {
+                // カスタムアイコンを作成
+                const gymIcon = L.divIcon({
+                    className: 'gym-marker',
+                    html: `<div style="
+                        background: linear-gradient(135deg, ${getTypeColor(gym.type)}, ${getDarkerColor(gym.type)});
+                        width: 40px;
+                        height: 40px;
+                        border-radius: 50%;
+                        border: 3px solid white;
+                        box-shadow: 0 4px 12px rgba(0,0,0,0.3), 0 2px 6px rgba(0,0,0,0.2);
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
+                        font-size: 18px;
+                        position: relative;
+                        transition: all 0.3s ease;
+                    " class="gym-pin-icon">
+                        ${getGymIcon(gym.type)}
+                        <div style="
+                            position: absolute;
+                            bottom: -8px;
+                            left: 50%;
+                            transform: translateX(-50%);
+                            width: 0;
+                            height: 0;
+                            border-left: 8px solid transparent;
+                            border-right: 8px solid transparent;
+                            border-top: 8px solid ${getTypeColor(gym.type)};
+                            filter: drop-shadow(0 2px 4px rgba(0,0,0,0.2));
+                        "></div>
+                    </div>`,
+                    iconSize: [40, 48],
+                    iconAnchor: [20, 48]
+                });
+                
+                // マーカーを作成（ホバー時のツールチップ付き）
+                const marker = L.marker([gym.lat, gym.lng], { icon: gymIcon })
+                    .addTo(map)
+                    .bindPopup(`
+                        <div style="min-width: 250px;">
+                            <h4 style="margin: 0 0 10px 0; color: #2c3e50;">${gym.name}</h4>
+                            <p style="margin: 5px 0; color: #7f8c8d; font-size: 14px;">📍 ${gym.address}</p>
+                            <span style="
+                                background-color: ${getTypeColor(gym.type)};
+                                color: white;
+                                padding: 3px 8px;
+                                border-radius: 12px;
+                                font-size: 12px;
+                            ">${gym.type}</span>
+                            ${generateDetailHTML(gym)}
+                        </div>
+                    `)
+                    .bindTooltip(gym.name, {
+                        permanent: false,
+                        direction: 'top',
+                        offset: [0, -10],
+                        className: 'gym-tooltip'
+                    });
+                
+                markers.push(marker);
+            });
+        }
+        
+        // ジムリストを表示
+        function displayGymList() {
+            const gymListContainer = document.getElementById('gym-list');
+            gymListContainer.innerHTML = '';
+            
+            gymData.forEach((gym, index) => {
+                const gymElement = document.createElement('div');
+                gymElement.className = 'gym-info';
+                gymElement.innerHTML = `
+                    <div class="gym-name">${gym.name}</div>
+                    <div class="gym-address">📍 ${gym.address}</div>
+                    <span class="gym-type" style="background-color: ${getTypeColor(gym.type)};">${gym.type}</span>
+                    ${gym.phone ? `<div class="detail-item">📞 ${gym.phone}</div>` : ''}
+                    ${gym.hours ? `<div class="detail-item">⏰ ${gym.hours}</div>` : ''}
+                `;
+                
+                // クリックイベント
+                gymElement.addEventListener('click', () => {
+                    map.setView([gym.lat, gym.lng], 15);
+                    markers[index].openPopup();
+                });
+                
+                gymListContainer.appendChild(gymElement);
+            });
+        }
+        
+        // ページ読み込み時に地図を初期化
+        window.addEventListener('load', function() {
+            console.log('詳細情報版ページ読み込み完了');
+            initMap();
+            displayGymList();
+            console.log('詳細情報付き地図とジムリスト初期化完了');
+        });
+    </script>
+</body>
+</html>
