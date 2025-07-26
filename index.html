@@ -3,234 +3,178 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>岡山県ジム地図 - 完全ガイド</title>
-    <meta name="description" content="岡山県内のジム・フィットネスクラブの詳細情報を地図で検索。営業時間、料金、設備情報を完全網羅。">
+    <title>岡山ジム地図 - Muscle Map</title>
+    <meta name="description" content="岡山県内のフィットネスジムを地図で簡単に探せるMuscle Map。初心者向けおすすめジム情報も掲載。">
+    
+    <!-- OGP Tags -->
+    <meta property="og:title" content="岡山ジム地図 - Muscle Map" />
+    <meta property="og:description" content="岡山県のジム情報がすぐ見つかる！地図で探してそのままナビも可能。" />
+    <meta property="og:image" content="https://yourdomain.com/ogp.jpg" />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://yourdomain.com/" />
     
     <!-- Leaflet CSS -->
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin=""/>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     
-    <style>
-        body { margin: 0; padding: 0; font-family: 'Segoe UI', sans-serif; background: #f5f5f5; }
-        .header { background: linear-gradient(135deg, #2c3e50, #3498db); color: white; padding: 20px; text-align: center; }
-        .header h1 { margin: 0; font-size: 28px; }
-        .ad-space { background: #f8f9fa; border: 2px dashed #dee2e6; padding: 20px; text-align: center; margin: 10px; border-radius: 8px; color: #6c757d; }
-        .ad-space-banner { height: 90px; display: flex; align-items: center; justify-content: center; }
-        .ad-space-large { height: 250px; display: flex; align-items: center; justify-content: center; }
-        .container { display: flex; height: calc(100vh - 140px); }
-        .sidebar { width: 320px; background: white; box-shadow: 2px 0 4px rgba(0,0,0,0.1); overflow-y: auto; display: flex; flex-direction: column; }
-        .sidebar-content { padding: 20px; flex: 1; }
-        .map-container { flex: 1; position: relative; }
-        #map { height: 100%; width: 100%; }
-        .gym-info { background: white; margin-bottom: 12px; padding: 16px; border-radius: 10px; border: 1px solid #e9ecef; cursor: pointer; transition: all 0.3s ease; }
-        .gym-info:hover { background: #f8f9fa; transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
-        .gym-name { font-weight: bold; color: #2c3e50; margin-bottom: 8px; font-size: 16px; }
-        .gym-address { color: #6c757d; font-size: 14px; margin-bottom: 8px; }
-        .gym-type { color: white; padding: 4px 10px; border-radius: 15px; font-size: 12px; display: inline-block; }
-        .gym-tooltip { background-color: rgba(0, 0, 0, 0.8) !important; color: white !important; border: none !important; border-radius: 6px !important; font-size: 13px !important; padding: 8px 12px !important; }
-        .minimal-popup { min-width: 200px; max-width: 250px; }
-        .popup-header { margin: 0 0 8px 0; color: #2c3e50; font-size: 16px; font-weight: bold; }
-        .popup-address { margin: 4px 0 8px 0; color: #6c757d; font-size: 13px; }
-        .detail-button { background: linear-gradient(135deg, #3498db, #2980b9); color: white; border: none; padding: 8px 16px; border-radius: 6px; cursor: pointer; font-size: 13px; width: 100%; }
-        .modal { display: none; position: fixed; z-index: 10000; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); }
-        .modal-content { background: white; margin: 5% auto; padding: 0; border-radius: 12px; width: 90%; max-width: 600px; max-height: 80vh; overflow-y: auto; box-shadow: 0 10px 30px rgba(0,0,0,0.3); }
-        .modal-header { background: linear-gradient(135deg, #2c3e50, #3498db); color: white; padding: 20px; border-radius: 12px 12px 0 0; position: relative; }
-        .modal-title { margin: 0; font-size: 20px; }
-        .close { position: absolute; right: 20px; top: 20px; color: white; font-size: 28px; cursor: pointer; }
-        .modal-body { padding: 20px; }
-        .detail-item { display: flex; align-items: center; margin: 12px 0; padding: 10px; background: #f8f9fa; border-radius: 8px; }
-        .detail-icon { font-size: 18px; margin-right: 12px; width: 24px; text-align: center; }
-        .detail-label { font-weight: 600; color: #2c3e50; font-size: 14px; }
-        .detail-value { color: #6c757d; font-size: 14px; margin-top: 2px; }
-        .action-buttons { display: flex; gap: 10px; margin-top: 20px; flex-wrap: wrap; }
-        .action-button { flex: 1; min-width: 120px; padding: 12px 16px; border: none; border-radius: 8px; cursor: pointer; font-size: 14px; text-decoration: none; text-align: center; color: white; }
-        .website-button { background: linear-gradient(135deg, #3498db, #2980b9); }
-        .instagram-button { background: linear-gradient(135deg, #E4405F, #C13584); }
-    </style>
+    <!-- Leaflet MarkerCluster CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.4.1/dist/MarkerCluster.css" />
+    <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.4.1/dist/MarkerCluster.Default.css" />
+    
+    <!-- Google AdSense Script Space -->
+    <!-- <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-XXXXXXXXXX" crossorigin="anonymous"></script> -->
+    
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <div class="header">
-        <h1>🏋️ 岡山県ジム完全ガイド</h1>
-        <p>津山・倉敷・岡山市内のジム・フィットネスクラブを地図で検索</p>
-    </div>
-    
-    <div class="ad-space ad-space-banner"><strong>広告スペース (728×90 バナー広告)</strong></div>
-    
-    <div class="container">
-        <div class="sidebar">
-            <div class="ad-space ad-space-large"><strong>広告スペース<br>(300×250)</strong></div>
-            <div class="sidebar-content">
-                <h3>ジム一覧 (6件表示中)</h3>
-                <div id="gym-list">ジム情報を読み込み中...</div>
+    <!-- Header with Search and Menu -->
+    <header class="header">
+        <div class="header-content">
+            <h1 class="logo">🏋️ Muscle Map</h1>
+            <div class="search-container">
+                <input type="text" id="searchInput" placeholder="ジム名で検索..." />
+                <button id="searchBtn">🔍</button>
             </div>
-            <div class="ad-space ad-space-large"><strong>広告スペース<br>(300×250)</strong></div>
+            <button class="hamburger-menu" id="hamburgerMenu">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
         </div>
-        <div class="map-container"><div id="map"></div></div>
-    </div>
+    </header>
 
-    <div id="detailModal" class="modal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h2 class="modal-title" id="modalTitle">ジム詳細情報</h2>
-                <span class="close">&times;</span>
-            </div>
-            <div class="modal-body">
-                <div class="ad-space ad-space-banner"><strong>広告スペース (詳細ページ内)</strong></div>
-                <div id="modalContent"></div>
-                <div class="ad-space ad-space-banner"><strong>広告スペース (詳細ページ下部)</strong></div>
-            </div>
-        </div>
-    </div>
+    <!-- Navigation Menu -->
+    <nav class="nav-menu" id="navMenu">
+        <ul>
+            <li><a href="#" data-page="map">🏠 トップ（地図に戻る）</a></li>
+            <li><a href="#" data-page="columns">📖 おすすめジムコラム</a></li>
+            <li><a href="#" data-page="about">👤 運営者情報</a></li>
+            <li><a href="#" data-page="privacy">🔐 プライバシーポリシー</a></li>
+            <li><a href="#" data-page="contact">📩 お問い合わせ</a></li>
+        </ul>
+    </nav>
 
-    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-    <script>
-        function detectGymType(name) {
-            if (name.includes('カーブス')) return '女性専用';
-            if (name.includes('ワールドプラス') || name.includes('エニタイム')) return '24時間ジム';
-            if (name.includes('ゴールドジム')) return '総合ジム';
-            if (name.includes('パーソナル') || name.includes('Personal')) return 'パーソナル';
-            return 'フィットネス';
-        }
-        
-        const gymData = [
-            {
-                id: 1, name: "ワールドプラスジム 津山小田中店", address: "津山市小田中１８５７−１",
-                lat: 35.0630163, lng: 133.9865394, type: detectGymType("ワールドプラスジム 津山小田中店"),
-                phone: "0868-32-7780", website: "https://www.worldplus-gym.com/", hours: "24時間営業",
-                parking: "無料駐車場あり", instagram: "worldplusgym_tsuyama", price: "月額6,980円〜",
-                features: ["24時間営業", "マシン特化", "初心者歓迎", "駐車場無料"]
-            },
-            {
-                id: 2, name: "ゴールドジム 津山岡山", address: "津山市河辺 濱田844-1 ユーズボウル内1F",
-                lat: 35.0621435, lng: 134.0489206, type: detectGymType("ゴールドジム 津山岡山"),
-                phone: "0868-26-0070", website: "https://www.goldsgym.jp/shop/okayama-tsuyama",
-                hours: "平日 7:00-23:00、土日祝 9:00-21:00", parking: "共用駐車場あり",
-                price: "月額9,900円〜", features: ["本格トレーニング", "プロ指導", "充実設備"]
-            },
-            {
-                id: 3, name: "カーブス 津山西", address: "津山市二宮71番１ ウエストランド 2F",
-                lat: 35.0605505, lng: 133.959185, type: detectGymType("カーブス 津山西"),
-                phone: "0868-24-5500", hours: "平日 10:00-19:00、土曜 10:00-13:00",
-                parking: "ショッピングセンター駐車場利用", price: "月額6,270円〜",
-                features: ["女性専用", "30分運動", "予約不要"]
-            }
-        ];
-        
-        let map, markers = [];
-        
-        function getTypeColor(type) {
-            const colors = { '総合ジム': '#3498db', '24時間ジム': '#e74c3c', '女性専用': '#e91e63', 'パーソナル': '#9b59b6', 'フィットネス': '#2ecc71' };
-            return colors[type] || '#3498db';
-        }
-        
-        function getDarkerColor(type) {
-            const colors = { '総合ジム': '#2980b9', '24時間ジム': '#c0392b', '女性専用': '#c2185b', 'パーソナル': '#8e44ad', 'フィットネス': '#27ae60' };
-            return colors[type] || '#2980b9';
-        }
-        
-        function getGymIcon(type) {
-            const icons = { '総合ジム': '🏋️', '24時間ジム': '⏰', '女性専用': '👩', 'パーソナル': '💪', 'フィットネス': '🏃' };
-            return icons[type] || '🏋️';
-        }
-        
-        function openDetailModal(gym) {
-            const modal = document.getElementById('detailModal');
-            const modalTitle = document.getElementById('modalTitle');
-            const modalContent = document.getElementById('modalContent');
+    <!-- Main Content -->
+    <main class="main-content">
+        <!-- Map Page -->
+        <div id="mapPage" class="page active">
+            <div id="map"></div>
             
-            modalTitle.textContent = gym.name;
-            modalContent.innerHTML = `
-                <div class="detail-item">
-                    <div class="detail-icon">📍</div>
-                    <div><div class="detail-label">住所</div><div class="detail-value">${gym.address}</div></div>
+            <!-- AdSense Banner -->
+            <div id="ad-banner" style="width:100%; text-align:center; margin: 1rem 0;">
+                <!-- AdSense広告コード挿入予定 -->
+                <div style="background: #f0f0f0; padding: 20px; border: 1px dashed #ccc;">
+                    AdSense広告エリア
                 </div>
-                <div class="detail-item">
-                    <div class="detail-icon">📞</div>
-                    <div><div class="detail-label">電話番号</div><div class="detail-value">${gym.phone}</div></div>
-                </div>
-                <div class="detail-item">
-                    <div class="detail-icon">⏰</div>
-                    <div><div class="detail-label">営業時間</div><div class="detail-value">${gym.hours}</div></div>
-                </div>
-                <div class="detail-item">
-                    <div class="detail-icon">💰</div>
-                    <div><div class="detail-label">料金目安</div><div class="detail-value">${gym.price}</div></div>
-                </div>
-                <div class="action-buttons">
-                    ${gym.website ? `<a href="${gym.website}" target="_blank" class="action-button website-button">🌐 公式サイト</a>` : ''}
-                    ${gym.instagram ? `<a href="https://instagram.com/${gym.instagram}" target="_blank" class="action-button instagram-button">📷 Instagram</a>` : ''}
-                </div>
-            `;
-            modal.style.display = 'block';
-        }
-        
-        function closeDetailModal() {
-            document.getElementById('detailModal').style.display = 'none';
-        }
-        
-        function initMap() {
-            map = L.map('map').setView([35.0630163, 133.9865394], 12);
-            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-                attribution: '© OpenStreetMap contributors'
-            }).addTo(map);
-            addGymMarkers();
-        }
-        
-        function addGymMarkers() {
-            gymData.forEach((gym, index) => {
-                const gymIcon = L.divIcon({
-                    className: 'gym-marker',
-                    html: `<div style="background: linear-gradient(135deg, ${getTypeColor(gym.type)}, ${getDarkerColor(gym.type)}); width: 40px; height: 40px; border-radius: 50%; border: 3px solid white; box-shadow: 0 4px 12px rgba(0,0,0,0.3); display: flex; align-items: center; justify-content: center; font-size: 18px; position: relative;">
-                        ${getGymIcon(gym.type)}
-                        <div style="position: absolute; bottom: -8px; left: 50%; transform: translateX(-50%); width: 0; height: 0; border-left: 8px solid transparent; border-right: 8px solid transparent; border-top: 8px solid ${getTypeColor(gym.type)};"></div>
-                    </div>`,
-                    iconSize: [40, 48], iconAnchor: [20, 48]
-                });
+            </div>
+        </div>
+
+        <!-- Columns Page -->
+        <div id="columnsPage" class="page">
+            <div class="page-header">
+                <h2>📖 おすすめジムコラム</h2>
+            </div>
+            <div id="columns">
+                <article class="column-article">
+                    <h3>📝 初心者におすすめ！岡山の入りやすいジム3選</h3>
+                    <p>通いやすさ・清潔感・スタッフ対応を軸に、岡山県で初心者におすすめのジムを3つ紹介！</p>
+                    
+                    <div class="gym-recommendation">
+                        <h4>① エニタイムフィットネス岡山駅前店</h4>
+                        <p>24時間営業で通いやすく、清潔感のある施設。初心者向けのマシンも充実しており、スタッフのサポートも丁寧です。</p>
+                    </div>
+                    
+                    <div class="gym-recommendation">
+                        <h4>② JOYFIT岡山高柳</h4>
+                        <p>リーズナブルな料金設定で、初心者でも気軽に始められます。プールやスタジオプログラムも豊富。</p>
+                    </div>
+                    
+                    <div class="gym-recommendation">
+                        <h4>③ ゴールドジム岡山</h4>
+                        <p>本格的なトレーニング環境でありながら、初心者向けのサポートも充実。経験豊富なトレーナーが在籍。</p>
+                    </div>
+                </article>
+            </div>
+        </div>
+
+        <!-- About Page -->
+        <div id="aboutPage" class="page">
+            <div class="page-header">
+                <h2>👤 運営者情報</h2>
+            </div>
+            <div class="page-content">
+                <p><strong>運営者:</strong> クーパー</p>
+                <p><strong>所在地:</strong> 岡山県</p>
+                <p><strong>連絡先:</strong> example@example.com</p>
+                <p><strong>サイト概要:</strong> 岡山県内のフィットネスジム情報を地図上で分かりやすく表示し、利用者の健康的なライフスタイルをサポートすることを目的としています。</p>
+            </div>
+        </div>
+
+        <!-- Privacy Policy Page -->
+        <div id="privacyPage" class="page">
+            <div class="page-header">
+                <h2>🔐 プライバシーポリシー</h2>
+            </div>
+            <div class="page-content">
+                <h3>個人情報の取り扱いについて</h3>
+                <p>当サイトでは、利用者の個人情報を適切に保護し、以下の方針に従って取り扱います。</p>
                 
-                const marker = L.marker([gym.lat, gym.lng], { icon: gymIcon })
-                    .addTo(map)
-                    .bindPopup(`
-                        <div class="minimal-popup">
-                            <h4 class="popup-header">${gym.name}</h4>
-                            <p class="popup-address">📍 ${gym.address}</p>
-                            <span class="gym-type" style="background-color: ${getTypeColor(gym.type)};">${gym.type}</span>
-                            <button class="detail-button" onclick="openDetailModal(gymData[${index}])">📋 詳細を見る</button>
+                <h4>Cookie の使用について</h4>
+                <p>当サイトでは、サービスの向上のためにCookieを使用する場合があります。Cookieは利用者のブラウザに保存される小さなファイルで、個人を特定する情報は含まれません。</p>
+                
+                <h4>Google AdSense について</h4>
+                <p>当サイトでは、Google AdSenseを使用して広告を配信しています。Google AdSenseは、利用者の興味に基づいた広告を表示するためにCookieを使用する場合があります。</p>
+                
+                <h4>免責事項</h4>
+                <p>当サイトに掲載されている情報の正確性については万全を期しておりますが、情報が古い場合や誤りがある可能性があります。最新の情報については、各ジムの公式サイトをご確認ください。</p>
+            </div>
+        </div>
+
+        <!-- Contact Page -->
+        <div id="contactPage" class="page">
+            <div class="page-header">
+                <h2>📩 お問い合わせ</h2>
+            </div>
+            <div class="page-content">
+                <p>サイトに関するご質問、ジム情報の修正・追加依頼などがございましたら、以下のメールアドレスまでお気軽にお問い合わせください。</p>
+                <p><strong>メールアドレス:</strong> <a href="mailto:example@example.com">example@example.com</a></p>
+                
+                <div class="contact-form">
+                    <h3>簡易お問い合わせフォーム</h3>
+                    <form id="contactForm">
+                        <div class="form-group">
+                            <label for="contactName">お名前:</label>
+                            <input type="text" id="contactName" name="name" required>
                         </div>
-                    `)
-                    .bindTooltip(gym.name, { permanent: false, direction: 'top', offset: [0, -10], className: 'gym-tooltip' });
-                
-                markers.push(marker);
-            });
-        }
-        
-        function displayGymList() {
-            const gymListContainer = document.getElementById('gym-list');
-            gymListContainer.innerHTML = '';
-            
-            gymData.forEach((gym, index) => {
-                const gymElement = document.createElement('div');
-                gymElement.className = 'gym-info';
-                gymElement.innerHTML = `
-                    <div class="gym-name">${gym.name}</div>
-                    <div class="gym-address">📍 ${gym.address}</div>
-                    <span class="gym-type" style="background-color: ${getTypeColor(gym.type)};">${gym.type}</span>
-                `;
-                gymElement.addEventListener('click', () => {
-                    map.setView([gym.lat, gym.lng], 15);
-                    markers[index].openPopup();
-                });
-                gymListContainer.appendChild(gymElement);
-            });
-        }
-        
-        document.querySelector('.close').addEventListener('click', closeDetailModal);
-        window.addEventListener('click', (event) => {
-            if (event.target === document.getElementById('detailModal')) closeDetailModal();
-        });
-        
-        window.addEventListener('load', function() {
-            initMap();
-            displayGymList();
-        });
-    </script>
+                        <div class="form-group">
+                            <label for="contactEmail">メールアドレス:</label>
+                            <input type="email" id="contactEmail" name="email" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="contactMessage">メッセージ:</label>
+                            <textarea id="contactMessage" name="message" rows="5" required></textarea>
+                        </div>
+                        <button type="submit">送信</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Gym Detail Modal -->
+    <div id="gymModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <div id="gymDetails"></div>
+        </div>
+    </div>
+
+    <!-- Leaflet JS -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    
+    <!-- Leaflet MarkerCluster JS -->
+    <script src="https://unpkg.com/leaflet.markercluster@1.4.1/dist/leaflet.markercluster.js"></script>
+    
+    <!-- Main Script -->
+    <script src="script.js"></script>
 </body>
 </html>

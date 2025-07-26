@@ -51,3 +51,6 @@ node_modules/
 # Build directories
 dist/
 build/
+
+# Local Netlify folder
+.netlify
