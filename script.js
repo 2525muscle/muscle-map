@@ -583,7 +583,15 @@ function performDistanceBasedSearch(searchTerm, userLat, userLng) {
     const matchingGyms = filterGymsByKeyword(visibleGyms, searchTerm);
     
     if (matchingGyms.length === 0) {
-        alert(`「${searchTerm}」に該当するジムが現在の表示範囲内に見つかりませんでした。\n\n・地図を拡大して再検索してください\n・ジム名の一部を入力（例：「エニタイム」「ゴールド」）`);
+        // フォールバック: 全データから最寄りのジムを検索
+        console.log('表示範囲内に該当なし、全データから最寄りを検索中...');
+        const fallbackResult = findNearestGymFallback(searchTerm, userLat, userLng);
+        
+        if (fallbackResult) {
+            displayFallbackResult(fallbackResult, searchTerm);
+        } else {
+            alert(`「${searchTerm}」に該当するジムが見つかりませんでした。\n\n検索のコツ：\n・ジム名の一部を入力（例：「エニタイム」「ゴールド」）\n・別のキーワードをお試しください`);
+        }
         return;
     }
     
@@ -601,7 +609,7 @@ function performDistanceBasedSearch(searchTerm, userLat, userLng) {
     gymsWithDistance.sort((a, b) => a.distance - b.distance);
     
     // 5. 検索結果を表示
-    displayDistanceBasedResults(gymsWithDistance, searchTerm);
+    displayDistanceBasedResults(gymsWithDistance, searchTerm, false);
     
     console.log(`距離ベース検索結果: 「${searchTerm}」で${gymsWithDistance.length}件のジムが見つかりました`);
 }
@@ -658,8 +666,65 @@ function formatDistance(distance) {
     }
 }
 
+// 全データから最寄りのジムを検索（フォールバック）
+function findNearestGymFallback(searchTerm, userLat, userLng) {
+    // 全ジムデータからキーワードでフィルタリング
+    const allMatchingGyms = filterGymsByKeyword(gymsData, searchTerm);
+    
+    if (allMatchingGyms.length === 0) {
+        return null;
+    }
+    
+    // 各ジムの距離を計算
+    const gymsWithDistance = allMatchingGyms.map(gym => {
+        const distance = calculateDistance(userLat, userLng, parseFloat(gym.latitude), parseFloat(gym.longitude));
+        return {
+            ...gym,
+            distance: distance,
+            distanceText: formatDistance(distance)
+        };
+    });
+    
+    // 距離順でソートして最寄りを返す
+    gymsWithDistance.sort((a, b) => a.distance - b.distance);
+    return gymsWithDistance[0];
+}
+
+// フォールバック結果の表示
+function displayFallbackResult(nearestGym, searchTerm) {
+    // Reset all markers
+    markers.forEach(({ marker }) => {
+        marker.getElement()?.classList.remove('highlight-marker');
+    });
+    
+    // 最寄りのジムをハイライト
+    const nearestMarker = markers.find(m => m.gym.name === nearestGym.name)?.marker;
+    if (nearestMarker) {
+        nearestMarker.getElement()?.classList.add('highlight-marker');
+        
+        // 最寄りのジムにフォーカス
+        map.setView([parseFloat(nearestGym.latitude), parseFloat(nearestGym.longitude)], 15);
+        
+        setTimeout(() => {
+            nearestMarker.openPopup();
+        }, 500);
+    }
+    
+    // Switch to map page if not already there
+    if (currentPage !== 'map') {
+        showPage('map', true);
+    }
+    
+    // ユーザーにフォールバックで表示したことを通知
+    setTimeout(() => {
+        alert(`表示範囲内に「${searchTerm}」が見つからなかったため、\n最寄りのジムを表示しました：\n\n🏆 ${nearestGym.name}\n📍 ${nearestGym.distanceText}先\n🗺️ ${nearestGym.address}`);
+    }, 1000);
+    
+    console.log(`フォールバック検索: 最寄りの「${searchTerm}」は ${nearestGym.name} (${nearestGym.distanceText})`);
+}
+
 // 距離ベース検索結果の表示
-function displayDistanceBasedResults(gymsWithDistance, searchTerm) {
+function displayDistanceBasedResults(gymsWithDistance, searchTerm, isFallback = false) {
     // Reset all markers
     markers.forEach(({ marker }) => {
         marker.getElement()?.classList.remove('highlight-marker');
