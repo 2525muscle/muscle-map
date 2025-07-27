@@ -403,12 +403,17 @@ function showGymDetails(gymName) {
     const website = gym.website ? gym.website : '公式サイトなし';
     const openingHours = gym.opening_hours || gym.openingHours || '営業時間情報なし';
     
+    // Google評価ページへのリンクを作成
+    const ratingDisplay = gym.rating && gym.placeId ? 
+        `<a href="https://www.google.com/maps/place/?q=place_id:${gym.placeId}" target="_blank" rel="noopener noreferrer" style="color: #007bff; text-decoration: none;">${rating}</a>` : 
+        rating;
+    
     detailsDiv.innerHTML = `
         <h3>🏋️ ${gym.name}</h3>
         <p><strong>📍 住所:</strong> ${gym.address}</p>
         <p><strong>📞 電話番号:</strong> ${phone}</p>
         <p><strong>🕒 営業時間:</strong> ${openingHours}</p>
-        <p><strong>⭐ 評価:</strong> ${rating} ${ratingsCount}</p>
+        <p><strong>⭐ 評価:</strong> ${ratingDisplay} ${ratingsCount}</p>
         <p><strong>🌐 公式サイト:</strong> ${website !== '公式サイトなし' ? `<a href="${website}" target="_blank" rel="noopener noreferrer">${website}</a>` : website}</p>
         <a href="${navUrl}" target="_blank" rel="noopener" class="nav-button">
             🧭 Googleマップでナビ
