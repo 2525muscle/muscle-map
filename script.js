@@ -72,55 +72,87 @@ async function loadGymsData() {
     }
 }
 
-// Parse CSV data with duplicate removal (新形式対応)
+// Parse CSV data with enhanced error handling and validation
 function parseCSV(csvText) {
-    const lines = csvText.trim().split('\n');
-    const headers = lines[0].split(',').map(header => header.trim());
-    console.log(`CSV ヘッダー:`, headers);
-    console.log(`CSV 総行数: ${lines.length}行（ヘッダー含む）`);
-    
-    const data = [];
-    let duplicateCount = 0;
-    let processedCount = 0;
-    
-    for (let i = 1; i < lines.length; i++) {
-        try {
-            const values = parseCSVLine(lines[i]);
-            if (values.length === headers.length && values[0] && values[0].trim()) {
-                const rawGym = {};
-                headers.forEach((header, index) => {
-                    rawGym[header] = values[index] ? values[index].trim() : '';
-                });
+    try {
+        const lines = csvText.trim().split('\n');
+        if (lines.length < 2) {
+            console.error('CSVファイルが空または不正です');
+            return [];
+        }
+        
+        const headers = parseCSVLine(lines[0]).map(header => header.trim());
+        console.log(`CSV ヘッダー:`, headers);
+        console.log(`CSV 総行数: ${lines.length}行（ヘッダー含む）`);
+        
+        // 必須フィールドの存在確認
+        const requiredFields = ['name', 'latitude', 'longitude'];
+        const missingFields = requiredFields.filter(field => !headers.includes(field));
+        if (missingFields.length > 0) {
+            console.error('必須フィールドが不足:', missingFields);
+            return [];
+        }
+        
+        const data = [];
+        let duplicateCount = 0;
+        let parseErrors = 0;
+        
+        for (let i = 1; i < lines.length; i++) {
+            try {
+                const values = parseCSVLine(lines[i]);
                 
-                // 新しいCSV形式を旧形式にマッピング
-                const gym = mapNewFormatToOld(rawGym);
+                // 空行や無効な行をスキップ
+                if (!values[0] || !values[0].trim()) {
+                    continue;
+                }
                 
-                // 有効なジムデータかチェック
-                if (gym.name && gym.latitude && gym.longitude) {
-                    // 重複チェック
-                    if (!isDuplicate(gym, data)) {
-                        data.push(gym);
-                        processedCount++;
-                        if (processedCount <= 5) {
-                            console.log(`ジム追加 #${processedCount}:`, gym.name, `(${gym.address})`);
+                if (values.length === headers.length) {
+                    const gym = {};
+                    headers.forEach((header, index) => {
+                        gym[header] = values[index] ? values[index].trim() : '';
+                    });
+                    
+                    // 必須フィールドの有効性チェック
+                    const lat = parseFloat(gym.latitude);
+                    const lng = parseFloat(gym.longitude);
+                    
+                    if (gym.name && !isNaN(lat) && !isNaN(lng)) {
+                        // 重複チェック
+                        if (!isDuplicate(gym, data)) {
+                            data.push(gym);
+                            if (data.length <= 10) {
+                                console.log(`ジム追加 #${data.length}:`, gym.name, `(${gym.searchCity || '不明'})`);
+                            }
+                        } else {
+                            duplicateCount++;
+                            console.log(`重複除外: ${gym.name}`);
                         }
                     } else {
-                        duplicateCount++;
+                        parseErrors++;
+                        console.warn(`無効データ (行${i+1}): ${gym.name || '名前なし'} - lat=${gym.latitude}, lng=${gym.longitude}`);
                     }
+                } else {
+                    parseErrors++;
+                    console.warn(`行 ${i+1}: フィールド数不一致 (期待: ${headers.length}, 実際: ${values.length})`);
                 }
-            } else if (values[0] && values[0].trim()) {
-                console.warn(`行 ${i+1}: フィールド数不一致 (期待: ${headers.length}, 実際: ${values.length})`);
+            } catch (error) {
+                parseErrors++;
+                console.warn(`行 ${i+1}: 解析エラー`, error.message);
             }
-        } catch (error) {
-            console.warn(`行 ${i+1}: 解析エラー`, error.message);
         }
+        
+        console.log(`\n📊 CSVデータ読み込み完了:`);
+        console.log(`- 元データ: ${lines.length - 1}件`);
+        console.log(`- 正常データ: ${data.length}件`);
+        console.log(`- 重複除外: ${duplicateCount}件`);
+        console.log(`- エラー: ${parseErrors}件`);
+        
+        return data;
+        
+    } catch (error) {
+        console.error('CSV解析で重大エラーが発生:', error);
+        return [];
     }
-    
-    console.log(`\n📊 CSVデータ読み込み完了:`);
-    console.log(`- 元データ: ${lines.length - 1}件`);
-    console.log(`- 重複除外: ${duplicateCount}件`);
-    console.log(`- 最終データ: ${data.length}件のジム情報`);
-    return data;
 }
 
 // 新しいCSV形式を旧形式にマッピング
@@ -144,28 +176,32 @@ function mapNewFormatToOld(rawGym) {
     };
 }
 
-// Check if gym data is duplicate (緩和版)
+// Check if gym data is duplicate with optimized logic
 function isDuplicate(newGym, existingData) {
-    const COORDINATE_THRESHOLD = 0.002; // 約200m以内（緩和）
-    const NAME_SIMILARITY_THRESHOLD = 0.8; // 名前類似度閾値
+    const COORDINATE_THRESHOLD = 0.001; // 約100m以内（緩和）
     
     for (const existingGym of existingData) {
-        // 1. ジム名が完全一致する場合のみ重複と判定（住所は考慮しない）
-        if (newGym.name === existingGym.name) {
-            console.log(`重複除外（名前完全一致）: ${newGym.name}`);
+        // 1. ジム名が完全一致かつ住所も一致する場合のみ重複と判定
+        if (newGym.name === existingGym.name && newGym.address === existingGym.address) {
             return true;
         }
         
-        // 2. 座標が近い場合（約200m以内）
-        const latDiff = Math.abs(parseFloat(newGym.latitude) - parseFloat(existingGym.latitude));
-        const lngDiff = Math.abs(parseFloat(newGym.longitude) - parseFloat(existingGym.longitude));
+        // 2. 座標が非常に近い場合（同じ建物内の可能性）- 閾値を緩和
+        const lat1 = parseFloat(newGym.latitude);
+        const lng1 = parseFloat(newGym.longitude);
+        const lat2 = parseFloat(existingGym.latitude);
+        const lng2 = parseFloat(existingGym.longitude);
         
-        if (latDiff < COORDINATE_THRESHOLD && lngDiff < COORDINATE_THRESHOLD) {
-            // 座標が近い場合は、名前の類似度もチェック
-            const nameSimilarity = calculateNameSimilarity(newGym.name, existingGym.name);
-            if (nameSimilarity > NAME_SIMILARITY_THRESHOLD) {
-                console.log(`重複除外（座標近接+名前類似）: ${newGym.name} vs ${existingGym.name} - 類似度: ${nameSimilarity.toFixed(2)}`);
-                return true;
+        if (!isNaN(lat1) && !isNaN(lng1) && !isNaN(lat2) && !isNaN(lng2)) {
+            const latDiff = Math.abs(lat1 - lat2);
+            const lngDiff = Math.abs(lng1 - lng2);
+            
+            // より厳格な条件：座標が非常に近く、かつ名前が類似している場合のみ重複
+            if (latDiff < COORDINATE_THRESHOLD && lngDiff < COORDINATE_THRESHOLD) {
+                const nameSimilarity = calculateNameSimilarity(newGym.name, existingGym.name);
+                if (nameSimilarity > 0.8) { // 80%以上の類似度
+                    return true;
+                }
             }
         }
     }
@@ -334,7 +370,7 @@ function displayGymsOnMap() {
     });
 }
 
-// Create popup content for markers
+// Create popup content for gym marker
 function createPopupContent(gym) {
     const shortAddress = gym.address.length > 30 ? 
         gym.address.substring(0, 30) + '...' : gym.address;
@@ -350,7 +386,7 @@ function createPopupContent(gym) {
     `;
 }
 
-// Show gym details in modal
+// Show gym details in modal (エリア項目削除版)
 function showGymDetails(gymName) {
     const gym = gymsData.find(g => g.name === gymName);
     if (!gym) return;
@@ -366,7 +402,6 @@ function showGymDetails(gymName) {
     const phone = gym.phone ? gym.phone : '電話番号なし';
     const website = gym.website ? gym.website : '公式サイトなし';
     const openingHours = gym.opening_hours || gym.openingHours || '営業時間情報なし';
-    const searchCity = gym.searchCity ? `📍 ${gym.searchCity}` : '';
     
     detailsDiv.innerHTML = `
         <h3>🏋️ ${gym.name}</h3>
@@ -374,7 +409,6 @@ function showGymDetails(gymName) {
         <p><strong>📞 電話番号:</strong> ${phone}</p>
         <p><strong>🕒 営業時間:</strong> ${openingHours}</p>
         <p><strong>⭐ 評価:</strong> ${rating} ${ratingsCount}</p>
-        <p><strong>🏙️ エリア:</strong> ${searchCity}</p>
         <p><strong>🌐 公式サイト:</strong> ${website !== '公式サイトなし' ? `<a href="${website}" target="_blank" rel="noopener noreferrer">${website}</a>` : website}</p>
         <a href="${navUrl}" target="_blank" rel="noopener" class="nav-button">
             🧭 Googleマップでナビ
