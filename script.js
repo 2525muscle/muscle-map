@@ -90,16 +90,21 @@ function parseCSV(csvText) {
                 gym[header] = values[index].trim();
             });
             
-            // Check for duplicates before adding
-            if (!isDuplicate(gym, data)) {
-                data.push(gym);
-                if (data.length <= 5) {
-                    console.log(`ジム追加 #${data.length}:`, gym.name, `(${gym.searchCity})`);
-                }
-            } else {
-                duplicateCount++;
-                console.log(`重複データを除外 #${duplicateCount}: ${gym.name} - ${gym.address}`);
+            // Temporarily disable duplicate removal for testing
+            data.push(gym);
+            if (data.length <= 10) {
+                console.log(`ジム追加 #${data.length}:`, gym.name, `(${gym.searchCity})`);
             }
+            // Duplicate removal temporarily disabled
+            // if (!isDuplicate(gym, data)) {
+            //     data.push(gym);
+            //     if (data.length <= 5) {
+            //         console.log(`ジム追加 #${data.length}:`, gym.name, `(${gym.searchCity})`);
+            //     }
+            // } else {
+            //     duplicateCount++;
+            //     console.log(`重複データを除外 #${duplicateCount}: ${gym.name} - ${gym.address}`);
+            // }
         } else {
             console.warn(`行 ${i+1}: フィールド数不一致 (期待: ${headers.length}, 実際: ${values.length})`);
         }
@@ -112,28 +117,83 @@ function parseCSV(csvText) {
     return data;
 }
 
-// Check if gym data is duplicate
+// Check if gym data is duplicate (緩和版)
 function isDuplicate(newGym, existingData) {
-    const COORDINATE_THRESHOLD = 0.0001; // 約10m以内（より厳格に）
+    const COORDINATE_THRESHOLD = 0.002; // 約200m以内（緩和）
+    const NAME_SIMILARITY_THRESHOLD = 0.8; // 名前類似度閾値
     
     for (const existingGym of existingData) {
-        // 1. ジム名が完全一致かつ住所も一致する場合のみ重複と判定
-        if (newGym.name === existingGym.name && newGym.address === existingGym.address) {
-            console.log(`重複除外（名前・住所一致）: ${newGym.name}`);
+        // 1. ジム名が完全一致する場合のみ重複と判定（住所は考慮しない）
+        if (newGym.name === existingGym.name) {
+            console.log(`重複除外（名前完全一致）: ${newGym.name}`);
             return true;
         }
         
-        // 2. 座標が非常に近い場合（同じ建物内の可能性）
+        // 2. 座標が近い場合（約200m以内）
         const latDiff = Math.abs(parseFloat(newGym.latitude) - parseFloat(existingGym.latitude));
         const lngDiff = Math.abs(parseFloat(newGym.longitude) - parseFloat(existingGym.longitude));
         
         if (latDiff < COORDINATE_THRESHOLD && lngDiff < COORDINATE_THRESHOLD) {
-            console.log(`重複除外（座標近接）: ${newGym.name} vs ${existingGym.name} - 距離差: lat=${latDiff.toFixed(6)}, lng=${lngDiff.toFixed(6)}`);
-            return true;
+            // 座標が近い場合は、名前の類似度もチェック
+            const nameSimilarity = calculateNameSimilarity(newGym.name, existingGym.name);
+            if (nameSimilarity > NAME_SIMILARITY_THRESHOLD) {
+                console.log(`重複除外（座標近接+名前類似）: ${newGym.name} vs ${existingGym.name} - 類似度: ${nameSimilarity.toFixed(2)}`);
+                return true;
+            }
         }
     }
     
     return false;
+}
+
+// 名前の類似度を計算（簡易版）
+function calculateNameSimilarity(name1, name2) {
+    // 空白・記号を除去して正規化
+    const normalize = (str) => str.replace(/[\s\-・（）()]/g, '').toLowerCase();
+    const n1 = normalize(name1);
+    const n2 = normalize(name2);
+    
+    // 完全一致
+    if (n1 === n2) return 1.0;
+    
+    // 一方が他方を含む場合
+    if (n1.includes(n2) || n2.includes(n1)) return 0.9;
+    
+    // レーベンシュタイン距離による類似度計算
+    const maxLen = Math.max(n1.length, n2.length);
+    if (maxLen === 0) return 1.0;
+    
+    const distance = levenshteinDistance(n1, n2);
+    return 1 - (distance / maxLen);
+}
+
+// レーベンシュタイン距離計算
+function levenshteinDistance(str1, str2) {
+    const matrix = [];
+    
+    for (let i = 0; i <= str2.length; i++) {
+        matrix[i] = [i];
+    }
+    
+    for (let j = 0; j <= str1.length; j++) {
+        matrix[0][j] = j;
+    }
+    
+    for (let i = 1; i <= str2.length; i++) {
+        for (let j = 1; j <= str1.length; j++) {
+            if (str2.charAt(i - 1) === str1.charAt(j - 1)) {
+                matrix[i][j] = matrix[i - 1][j - 1];
+            } else {
+                matrix[i][j] = Math.min(
+                    matrix[i - 1][j - 1] + 1,
+                    matrix[i][j - 1] + 1,
+                    matrix[i - 1][j] + 1
+                );
+            }
+        }
+    }
+    
+    return matrix[str2.length][str1.length];
 }
 
 // Parse CSV line handling commas within quotes
