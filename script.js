@@ -72,11 +72,15 @@ async function loadGymsData() {
     }
 }
 
-// Parse CSV data
+// Parse CSV data with duplicate removal
 function parseCSV(csvText) {
     const lines = csvText.trim().split('\n');
     const headers = lines[0].split(',').map(header => header.trim());
+    console.log(`CSV ヘッダー:`, headers);
+    console.log(`CSV 総行数: ${lines.length}行（ヘッダー含む）`);
+    
     const data = [];
+    let duplicateCount = 0;
     
     for (let i = 1; i < lines.length; i++) {
         const values = parseCSVLine(lines[i]);
@@ -85,11 +89,51 @@ function parseCSV(csvText) {
             headers.forEach((header, index) => {
                 gym[header] = values[index].trim();
             });
-            data.push(gym);
+            
+            // Check for duplicates before adding
+            if (!isDuplicate(gym, data)) {
+                data.push(gym);
+                if (data.length <= 5) {
+                    console.log(`ジム追加 #${data.length}:`, gym.name, `(${gym.searchCity})`);
+                }
+            } else {
+                duplicateCount++;
+                console.log(`重複データを除外 #${duplicateCount}: ${gym.name} - ${gym.address}`);
+            }
+        } else {
+            console.warn(`行 ${i+1}: フィールド数不一致 (期待: ${headers.length}, 実際: ${values.length})`);
         }
     }
     
+    console.log(`\n📊 CSVデータ読み込み完了:`);
+    console.log(`- 元データ: ${lines.length - 1}件`);
+    console.log(`- 重複除外: ${duplicateCount}件`);
+    console.log(`- 最終データ: ${data.length}件のジム情報`);
     return data;
+}
+
+// Check if gym data is duplicate
+function isDuplicate(newGym, existingData) {
+    const COORDINATE_THRESHOLD = 0.0001; // 約10m以内（より厳格に）
+    
+    for (const existingGym of existingData) {
+        // 1. ジム名が完全一致かつ住所も一致する場合のみ重複と判定
+        if (newGym.name === existingGym.name && newGym.address === existingGym.address) {
+            console.log(`重複除外（名前・住所一致）: ${newGym.name}`);
+            return true;
+        }
+        
+        // 2. 座標が非常に近い場合（同じ建物内の可能性）
+        const latDiff = Math.abs(parseFloat(newGym.latitude) - parseFloat(existingGym.latitude));
+        const lngDiff = Math.abs(parseFloat(newGym.longitude) - parseFloat(existingGym.longitude));
+        
+        if (latDiff < COORDINATE_THRESHOLD && lngDiff < COORDINATE_THRESHOLD) {
+            console.log(`重複除外（座標近接）: ${newGym.name} vs ${existingGym.name} - 距離差: lat=${latDiff.toFixed(6)}, lng=${lngDiff.toFixed(6)}`);
+            return true;
+        }
+    }
+    
+    return false;
 }
 
 // Parse CSV line handling commas within quotes
@@ -229,14 +273,22 @@ function showGymDetails(gymName) {
     
     const navUrl = `https://www.google.com/maps/dir/?api=1&destination=${gym.latitude},${gym.longitude}`;
     
+    // Format collected data for display
+    const rating = gym.rating ? `⭐ ${gym.rating}点` : '評価なし';
+    const ratingsCount = gym.userRatingsTotal ? `(${gym.userRatingsTotal}件の評価)` : '';
+    const phone = gym.phone ? gym.phone : '電話番号なし';
+    const website = gym.website ? gym.website : '公式サイトなし';
+    const openingHours = gym.opening_hours || gym.openingHours || '営業時間情報なし';
+    const searchCity = gym.searchCity ? `📍 ${gym.searchCity}` : '';
+    
     detailsDiv.innerHTML = `
         <h3>🏋️ ${gym.name}</h3>
         <p><strong>📍 住所:</strong> ${gym.address}</p>
-        <p><strong>🕒 営業時間:</strong> ${gym.opening_hours}</p>
-        <p><strong>💰 料金情報:</strong> ${gym.price_info}</p>
-        <p><strong>💸 ビジター料金:</strong> ${gym.visitor_price}</p>
-        <p><strong>📷 撮影可否:</strong> ${gym.photo_permission}</p>
-        <p><strong>🌐 公式サイト:</strong> <a href="${gym.website}" target="_blank" rel="noopener noreferrer">${gym.website}</a></p>
+        <p><strong>📞 電話番号:</strong> ${phone}</p>
+        <p><strong>🕒 営業時間:</strong> ${openingHours}</p>
+        <p><strong>⭐ 評価:</strong> ${rating} ${ratingsCount}</p>
+        <p><strong>🏙️ エリア:</strong> ${searchCity}</p>
+        <p><strong>🌐 公式サイト:</strong> ${website !== '公式サイトなし' ? `<a href="${website}" target="_blank" rel="noopener noreferrer">${website}</a>` : website}</p>
         <a href="${navUrl}" target="_blank" rel="noopener" class="nav-button">
             🧭 Googleマップでナビ
         </a>
@@ -467,7 +519,7 @@ function getCurrentLocation() {
             if (currentLocationCircle) {
                 map.removeLayer(currentLocationCircle);
             }
-            
+                
             // Add accuracy circle
             currentLocationCircle = L.circle([lat, lng], {
                 radius: accuracy,
@@ -476,7 +528,7 @@ function getCurrentLocation() {
                 fillOpacity: 0.15,
                 weight: 2
             }).addTo(map);
-            
+                
             // Add current location marker
             currentLocationMarker = L.marker([lat, lng], {
                 icon: L.divIcon({
@@ -486,20 +538,20 @@ function getCurrentLocation() {
                     iconAnchor: [9, 9]
                 })
             }).addTo(map);
-            
+                
             // Add popup
             currentLocationMarker.bindPopup('📍 あなたの現在地').openPopup();
-            
+                
             // Zoom to current location
             map.setView([lat, lng], 16);
-            
+                
             // Restore button
             button.innerHTML = originalContent;
             button.style.pointerEvents = 'auto';
         },
         function(error) {
             let errorMessage = '現在地を取得できませんでした。位置情報の許可が必要です。';
-            
+                
             switch(error.code) {
                 case error.PERMISSION_DENIED:
                     errorMessage = '現在地を取得できませんでした。位置情報の許可が必要です。';
@@ -511,9 +563,9 @@ function getCurrentLocation() {
                     errorMessage = '位置情報の取得がタイムアウトしました。';
                     break;
             }
-            
+                
             alert(errorMessage);
-            
+                
             // Restore button
             button.innerHTML = originalContent;
             button.style.pointerEvents = 'auto';
