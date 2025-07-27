@@ -72,7 +72,7 @@ async function loadGymsData() {
     }
 }
 
-// Parse CSV data with duplicate removal
+// Parse CSV data with duplicate removal (新形式対応)
 function parseCSV(csvText) {
     const lines = csvText.trim().split('\n');
     const headers = lines[0].split(',').map(header => header.trim());
@@ -81,32 +81,38 @@ function parseCSV(csvText) {
     
     const data = [];
     let duplicateCount = 0;
+    let processedCount = 0;
     
     for (let i = 1; i < lines.length; i++) {
-        const values = parseCSVLine(lines[i]);
-        if (values.length === headers.length) {
-            const gym = {};
-            headers.forEach((header, index) => {
-                gym[header] = values[index].trim();
-            });
-            
-            // Temporarily disable duplicate removal for testing
-            data.push(gym);
-            if (data.length <= 10) {
-                console.log(`ジム追加 #${data.length}:`, gym.name, `(${gym.searchCity})`);
+        try {
+            const values = parseCSVLine(lines[i]);
+            if (values.length === headers.length && values[0] && values[0].trim()) {
+                const rawGym = {};
+                headers.forEach((header, index) => {
+                    rawGym[header] = values[index] ? values[index].trim() : '';
+                });
+                
+                // 新しいCSV形式を旧形式にマッピング
+                const gym = mapNewFormatToOld(rawGym);
+                
+                // 有効なジムデータかチェック
+                if (gym.name && gym.latitude && gym.longitude) {
+                    // 重複チェック
+                    if (!isDuplicate(gym, data)) {
+                        data.push(gym);
+                        processedCount++;
+                        if (processedCount <= 5) {
+                            console.log(`ジム追加 #${processedCount}:`, gym.name, `(${gym.address})`);
+                        }
+                    } else {
+                        duplicateCount++;
+                    }
+                }
+            } else if (values[0] && values[0].trim()) {
+                console.warn(`行 ${i+1}: フィールド数不一致 (期待: ${headers.length}, 実際: ${values.length})`);
             }
-            // Duplicate removal temporarily disabled
-            // if (!isDuplicate(gym, data)) {
-            //     data.push(gym);
-            //     if (data.length <= 5) {
-            //         console.log(`ジム追加 #${data.length}:`, gym.name, `(${gym.searchCity})`);
-            //     }
-            // } else {
-            //     duplicateCount++;
-            //     console.log(`重複データを除外 #${duplicateCount}: ${gym.name} - ${gym.address}`);
-            // }
-        } else {
-            console.warn(`行 ${i+1}: フィールド数不一致 (期待: ${headers.length}, 実際: ${values.length})`);
+        } catch (error) {
+            console.warn(`行 ${i+1}: 解析エラー`, error.message);
         }
     }
     
@@ -115,6 +121,27 @@ function parseCSV(csvText) {
     console.log(`- 重複除外: ${duplicateCount}件`);
     console.log(`- 最終データ: ${data.length}件のジム情報`);
     return data;
+}
+
+// 新しいCSV形式を旧形式にマッピング
+function mapNewFormatToOld(rawGym) {
+    return {
+        name: rawGym.name || '',
+        address: rawGym.address || '',
+        latitude: rawGym.latitude || '',
+        longitude: rawGym.longitude || '',
+        opening_hours: rawGym.opening_hours || '要確認',
+        price_info: rawGym.price_info || '要確認',
+        visitor_price: rawGym.visitor_price || '要確認',
+        photo_permission: rawGym.photo_permission || '要確認',
+        website: rawGym.website || '',
+        phone: rawGym.phone || '',
+        rating: rawGym.rating || '',
+        userRatingsTotal: rawGym.userRatingsTotal || '',
+        businessStatus: rawGym.businessStatus || '',
+        searchCity: rawGym.searchCity || '',
+        placeId: rawGym.placeId || ''
+    };
 }
 
 // Check if gym data is duplicate (緩和版)
