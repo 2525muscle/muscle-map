@@ -11,8 +11,7 @@ let currentPage = 'map';
 // Initialize the application
 document.addEventListener('DOMContentLoaded', function() {
     initializeMap();
-    loadGymsData();
-    loadAnytimeGymsData(); // エニタイム専用データ読み込み
+    loadGymsData(); // エニタイムデータもここで統合される
     setupEventListeners();
     
     // Handle browser back/forward buttons
@@ -61,6 +60,11 @@ async function loadGymsData() {
         
         if (csvText.trim()) {
             gymsData = parseCSV(csvText);
+            console.log(`🏢 メインジムデータ読み込み完了: ${gymsData.length}件`);
+            
+            // メインデータ読み込み後にエニタイムデータを統合
+            await loadAnytimeGymsData();
+            
             displayGymsOnMap();
         } else {
             console.warn('CSV file is empty or not found');
@@ -96,14 +100,22 @@ async function loadAnytimeGymsData() {
 
 // Merge Anytime Fitness data into main gyms data
 function mergeAnytimeDataToGyms() {
+    console.log(`🔍 統合処理開始:`);
+    console.log(`- メインデータ: ${gymsData.length}件`);
+    console.log(`- エニタイムデータ: ${anytimeGymsData ? anytimeGymsData.length : 0}件`);
+    
     if (!anytimeGymsData || anytimeGymsData.length === 0) {
+        console.warn('⚠️ エニタイムデータが空です');
         return;
     }
     
+    const beforeCount = gymsData.length;
     let addedCount = 0;
     let duplicateCount = 0;
     
-    anytimeGymsData.forEach(anytimeGym => {
+    anytimeGymsData.forEach((anytimeGym, index) => {
+        console.log(`📍 処理中 ${index + 1}/${anytimeGymsData.length}: ${anytimeGym.name}`);
+        
         // 重複チェック
         const isDupe = gymsData.some(existingGym => {
             return existingGym.name === anytimeGym.name && 
@@ -113,15 +125,23 @@ function mergeAnytimeDataToGyms() {
         if (!isDupe) {
             gymsData.push(anytimeGym);
             addedCount++;
+            console.log(`  ✅ 追加: ${anytimeGym.name}`);
         } else {
             duplicateCount++;
+            console.log(`  ⚠️ 重複除外: ${anytimeGym.name}`);
         }
     });
     
-    console.log(`🔄 エニタイムデータ統合完了: ${addedCount}件追加, ${duplicateCount}件重複除外`);
+    const afterCount = gymsData.length;
+    console.log(`🔄 エニタイムデータ統合完了:`);
+    console.log(`- 統合前: ${beforeCount}件`);
+    console.log(`- 統合後: ${afterCount}件`);
+    console.log(`- 追加: ${addedCount}件`);
+    console.log(`- 重複除外: ${duplicateCount}件`);
     
-    // 地図を再描画
-    displayGymsOnMap();
+    // エニタイムが含まれているか確認
+    const anytimeCount = gymsData.filter(gym => gym.name.includes('エニタイム')).length;
+    console.log(`🏋️ 統合後のエニタイム店舗数: ${anytimeCount}件`);
 }
 
 // Parse CSV data with enhanced error handling and validation
