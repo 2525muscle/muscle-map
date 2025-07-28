@@ -1,8 +1,7 @@
 // Global variables
 let map;
 let markers = [];
-let gymsData = [];
-let anytimeGymsData = []; // エニタイムデータ
+let gymsData = []; // エニタイムフィットネスを含む全ジムデータ
 let markerClusterGroup;
 let currentLocationMarker = null;
 let currentLocationAccuracyCircle = null;
@@ -11,7 +10,7 @@ let currentPage = 'map';
 // Initialize the application
 document.addEventListener('DOMContentLoaded', function() {
     initializeMap();
-    loadGymsData(); // エニタイムデータもここで統合される
+    loadGymsData(); // エニタイムフィットネスを含む全ジムデータを読み込み
     setupEventListeners();
     
     // Handle browser back/forward buttons
@@ -60,10 +59,11 @@ async function loadGymsData() {
         
         if (csvText.trim()) {
             gymsData = parseCSV(csvText);
-            console.log(`🏢 メインジムデータ読み込み完了: ${gymsData.length}件`);
+            console.log(`🏢 ジムデータ読み込み完了: ${gymsData.length}件`);
             
-            // メインデータ読み込み後にエニタイムデータを統合
-            await loadAnytimeGymsData();
+            // エニタイムフィットネスが含まれているか確認
+            const anytimeCount = gymsData.filter(gym => gym.name.includes('エニタイム')).length;
+            console.log(`🏋️ エニタイムフィットネス店舗数: ${anytimeCount}件`);
             
             displayGymsOnMap();
         } else {
@@ -76,72 +76,6 @@ async function loadGymsData() {
         // Create sample data for demonstration
         createSampleData();
     }
-}
-
-// Load Anytime Fitness data from CSV and merge with existing data
-async function loadAnytimeGymsData() {
-    try {
-        const response = await fetch(`anytime-fitness-only.csv?v=${Date.now()}`);
-        const csvText = await response.text();
-        
-        if (csvText.trim()) {
-            anytimeGymsData = parseCSV(csvText);
-            console.log(`🏋️ エニタイムフィットネスデータ読み込み完了: ${anytimeGymsData.length}店舗`);
-            
-            // エニタイムデータを既存データに統合
-            mergeAnytimeDataToGyms();
-        } else {
-            console.warn('anytime-fitness-only.csv file is empty or not found');
-        }
-    } catch (error) {
-        console.error('Error loading Anytime Fitness data:', error);
-    }
-}
-
-// Merge Anytime Fitness data into main gyms data
-function mergeAnytimeDataToGyms() {
-    console.log(`🔍 統合処理開始:`);
-    console.log(`- メインデータ: ${gymsData.length}件`);
-    console.log(`- エニタイムデータ: ${anytimeGymsData ? anytimeGymsData.length : 0}件`);
-    
-    if (!anytimeGymsData || anytimeGymsData.length === 0) {
-        console.warn('⚠️ エニタイムデータが空です');
-        return;
-    }
-    
-    const beforeCount = gymsData.length;
-    let addedCount = 0;
-    let duplicateCount = 0;
-    
-    anytimeGymsData.forEach((anytimeGym, index) => {
-        console.log(`📍 処理中 ${index + 1}/${anytimeGymsData.length}: ${anytimeGym.name}`);
-        
-        // 重複チェック
-        const isDupe = gymsData.some(existingGym => {
-            return existingGym.name === anytimeGym.name && 
-                   existingGym.address === anytimeGym.address;
-        });
-        
-        if (!isDupe) {
-            gymsData.push(anytimeGym);
-            addedCount++;
-            console.log(`  ✅ 追加: ${anytimeGym.name}`);
-        } else {
-            duplicateCount++;
-            console.log(`  ⚠️ 重複除外: ${anytimeGym.name}`);
-        }
-    });
-    
-    const afterCount = gymsData.length;
-    console.log(`🔄 エニタイムデータ統合完了:`);
-    console.log(`- 統合前: ${beforeCount}件`);
-    console.log(`- 統合後: ${afterCount}件`);
-    console.log(`- 追加: ${addedCount}件`);
-    console.log(`- 重複除外: ${duplicateCount}件`);
-    
-    // エニタイムが含まれているか確認
-    const anytimeCount = gymsData.filter(gym => gym.name.includes('エニタイム')).length;
-    console.log(`🏋️ 統合後のエニタイム店舗数: ${anytimeCount}件`);
 }
 
 // Parse CSV data with enhanced error handling and validation
@@ -193,7 +127,7 @@ function parseCSV(csvText) {
                         if (!isDuplicate(gym, data)) {
                             data.push(gym);
                             if (data.length <= 10) {
-                                console.log(`ジム追加 #${data.length}:`, gym.name, `(${gym.searchCity || '不明'})`);
+                                console.log(`ジム追加 #${data.length}:`, gym.name, `(${gym.city || '不明'})`);
                             }
                         } else {
                             duplicateCount++;
