@@ -1,0 +1,147 @@
+{
+  "timestamp": "2025-07-27T13:29:47.251Z",
+  "searchQueries": [
+    "エニタイムフィットネス 岡山県",
+    "Anytime Fitness 岡山県",
+    "エニタイムフィットネス 岡山市",
+    "Anytime Fitness 岡山市",
+    "エニタイムフィットネス 倉敷市",
+    "Anytime Fitness 倉敷市",
+    "24時間ジム 岡山",
+    "フィットネス24 岡山"
+  ],
+  "totalFound": 49,
+  "uniqueResults": 13,
+  "gyms": [
+    {
+      "name": "エニタイムフィットネス 岡山今店",
+      "address": "〒700-0975 岡山県岡山市北区今２丁目１−２５",
+      "latitude": 34.6501243,
+      "longitude": 133.897074,
+      "rating": 3.2,
+      "userRatingsTotal": 59,
+      "placeId": "ChIJt9CdWrYHVDUR7WkLw2iOfLA",
+      "businessStatus": "OPERATIONAL"
+    },
+    {
+      "name": "エニタイムフィットネス 岡山益野店",
+      "address": "〒704-8175 岡山県岡山市東区益野町１５−１ 1F 2F",
+      "latitude": 34.6587268,
+      "longitude": 133.9971228,
+      "rating": 3.8,
+      "userRatingsTotal": 18,
+      "placeId": "ChIJrx6DzsAJVDURFL28c-tuDq8",
+      "businessStatus": "OPERATIONAL"
+    },
+    {
+      "name": "エニタイムフィットネス岡山バイパス妹尾店",
+      "address": "〒701-0203 岡山県岡山市南区古新田１１２５ ２階",
+      "latitude": 34.6226275,
+      "longitude": 133.8713931,
+      "rating": 4.1,
+      "userRatingsTotal": 12,
+      "placeId": "ChIJUa5Rd7b5UzURh-tYXlQyyD0",
+      "businessStatus": "OPERATIONAL"
+    },
+    {
+      "name": "エニタイムフィットネス 岡山原尾島店",
+      "address": "〒703-8235 岡山県岡山市中区原尾島３丁目２−１１",
+      "latitude": 34.6706714,
+      "longitude": 133.9452009,
+      "rating": 3.5,
+      "userRatingsTotal": 51,
+      "placeId": "ChIJW-ClbQsHVDUR7d8iT_P7bco",
+      "businessStatus": "OPERATIONAL"
+    },
+    {
+      "name": "エニタイムフィットネス 岡山福富店",
+      "address": "〒702-8031 岡山県岡山市南区福富西２丁目１８−２３",
+      "latitude": 34.6222972,
+      "longitude": 133.9296166,
+      "rating": 3.2,
+      "userRatingsTotal": 44,
+      "placeId": "ChIJJSBpB_YHVDURb-pcKVm410c",
+      "businessStatus": "OPERATIONAL"
+    },
+    {
+      "name": "エニタイムフィットネス 岡山富田店",
+      "address": "〒700-0936 岡山県岡山市北区富田５０８−３",
+      "latitude": 34.6377911,
+      "longitude": 133.9182842,
+      "rating": 3.4,
+      "userRatingsTotal": 33,
+      "placeId": "ChIJd1afzeQHVDURHIDNC0pplEE",
+      "businessStatus": "OPERATIONAL"
+    },
+    {
+      "name": "エニタイムフィットネス 倉敷笹沖店",
+      "address": "〒710-0834 岡山県倉敷市笹沖１２４０−３",
+      "latitude": 34.5799575,
+      "longitude": 133.7690111,
+      "rating": 3.9,
+      "userRatingsTotal": 64,
+      "placeId": "ChIJRQU5TEJXUTURn69pBmEvnOo",
+      "businessStatus": "OPERATIONAL"
+    },
+    {
+      "name": "エニタイムフィットネス 倉敷中島店",
+      "address": "〒710-0803 岡山県倉敷市中島２５２",
+      "latitude": 34.5852129,
+      "longitude": 133.740842,
+      "rating": 4.1,
+      "userRatingsTotal": 17,
+      "placeId": "ChIJfxhj2r1XUTUR1DgSuGp-g18",
+      "businessStatus": "OPERATIONAL"
+    },
+    {
+      "name": "エニタイムフィットネス 倉敷連島店",
+      "address": "〒712-8014 岡山県倉敷市連島中央１丁目９−６",
+      "latitude": 34.5457272,
+      "longitude": 133.7311929,
+      "rating": 3.5,
+      "userRatingsTotal": 23,
+      "placeId": "ChIJUctZNeBZUTURV2VjmWDP7eY",
+      "businessStatus": "OPERATIONAL"
+    },
+    {
+      "name": "エニタイムフィ��トネス 倉敷中島店",
+      "address": "〒710-0803 岡山県倉敷市中島２５２",
+      "latitude": 34.5852129,
+      "longitude": 133.740842,
+      "rating": 4.1,
+      "userRatingsTotal": 17,
+      "placeId": "ChIJfxhj2r1XUTUR1DgSuGp-g18",
+      "businessStatus": "OPERATIONAL"
+    },
+    {
+      "name": "エニタイムフィットネス 倉敷福島店",
+      "address": "〒710-0014 岡山県倉敷市黒崎２５−４",
+      "latitude": 34.6042877,
+      "longitude": 133.7867843,
+      "rating": 3.9,
+      "userRatingsTotal": 42,
+      "placeId": "ChIJ3-344IdjA2ARYdLSxNgWzoo",
+      "businessStatus": "OPERATIONAL"
+    },
+    {
+      "name": "女性専用24時間ジム&エステ BETORE (ビトレ)岡山本店",
+      "address": "〒700-0964 岡山県岡山市北区中仙道１丁目１−１２ 2F",
+      "latitude": 34.6491705,
+      "longitude": 133.8907505,
+      "rating": 4.9,
+      "userRatingsTotal": 75,
+      "placeId": "ChIJ8Xqnfr4HVDURpn33L47s-2E",
+      "businessStatus": "OPERATIONAL"
+    },
+    {
+      "name": "女性専用24時間ジム Amazones（アマゾネス）ブランチ北長瀬店",
+      "address": "〒700-0971 岡山県岡山市北区北長瀬表町２丁目１７−８０",
+      "latitude": 34.6530549,
+      "longitude": 133.8882231,
+      "rating": 4.8,
+      "userRatingsTotal": 147,
+      "placeId": "ChIJfUiKtDoHVDURVVZ_DnsurHE",
+      "businessStatus": "OPERATIONAL"
+    }
+  ]
+}

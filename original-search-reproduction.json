@@ -1,0 +1,111 @@
+{
+  "timestamp": "2025-07-27T13:35:54.905Z",
+  "okayamaCoordinates": {
+    "lat": 34.656228,
+    "lng": 133.9194179
+  },
+  "totalGymsFound": 20,
+  "anytimeInTotal": 0,
+  "anytimeInTop20": 0,
+  "excludedByLimit": false,
+  "anytimeGyms": [],
+  "allGyms": [
+    {
+      "name": "Reisupotsukurabuokayama",
+      "rating": 3.5,
+      "distance": 3.151055907788034
+    },
+    {
+      "name": "Obarusupotsukomusenoo",
+      "rating": 3,
+      "distance": 7.316781831218211
+    },
+    {
+      "name": "Daikazoku no Yu",
+      "rating": 3.9,
+      "distance": 4.480883646738972
+    },
+    {
+      "name": "Curves",
+      "rating": 3.1,
+      "distance": 1.3393209221455233
+    },
+    {
+      "name": "ゼロ戦クラブ",
+      "rating": 3.4,
+      "distance": 1.506276144568199
+    },
+    {
+      "name": "コザックススポーツ本店",
+      "rating": 5,
+      "distance": 1.3915533912426632
+    },
+    {
+      "name": "Notre Dame Seishinjoshidaigaku Ichinomiya Gymnastics",
+      "distance": 5.434459124400743
+    },
+    {
+      "name": "Curves",
+      "rating": 4.6,
+      "distance": 5.567661759204128
+    },
+    {
+      "name": "メディカルフィットネスこうなん",
+      "rating": 4,
+      "distance": 6.6469737550058925
+    },
+    {
+      "name": "Mitsuzumi B.L.D",
+      "rating": 4.3,
+      "distance": 2.9675172533744343
+    },
+    {
+      "name": "Okayamapuroposhonakademi",
+      "rating": 4.8,
+      "distance": 1.1444308885722672
+    },
+    {
+      "name": "(有)アスリート レンタルスタジオ事業部",
+      "distance": 2.4153396847612907
+    },
+    {
+      "name": "(株)サンクセルクル",
+      "distance": 4.569315378962015
+    },
+    {
+      "name": "Curves",
+      "rating": 4.4,
+      "distance": 6.076962240217051
+    },
+    {
+      "name": "ヒーローズ",
+      "rating": 4.9,
+      "distance": 1.4859499599387997
+    },
+    {
+      "name": "yoga nadi",
+      "rating": 5,
+      "distance": 1.0517442734492446
+    },
+    {
+      "name": "RIZAP Okayama",
+      "rating": 3.8,
+      "distance": 1.277621773809964
+    },
+    {
+      "name": "Hottoyogaroibuokayamaten",
+      "rating": 4.8,
+      "distance": 1.9641949668894843
+    },
+    {
+      "name": "Noaindoasutejiokayamako",
+      "rating": 4.4,
+      "distance": 2.0188296062825484
+    },
+    {
+      "name": "Tennis & Sukuru Noa Okayamako",
+      "rating": 4.2,
+      "distance": 2.018959948209808
+    }
+  ]
+}

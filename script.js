@@ -1,16 +1,20 @@
 // Global variables
 let map;
 let markers = [];
-let markerClusterGroup;
 let gymsData = [];
-let currentPage = 'map';
+let anytimeGymsData = []; // エニタイム専用データ
+let markerClusterGroup;
+let anytimeMarkerClusterGroup; // エニタイム専用クラスター
 let currentLocationMarker = null;
-let currentLocationCircle = null;
+let currentLocationAccuracyCircle = null;
+let currentPage = 'map';
+let showAnytimeOnly = false; // エニタイム表示切り替えフラグ
 
 // Initialize the application
 document.addEventListener('DOMContentLoaded', function() {
     initializeMap();
     loadGymsData();
+    loadAnytimeGymsData(); // エニタイム専用データ読み込み
     setupEventListeners();
     
     // Handle browser back/forward buttons
@@ -49,6 +53,26 @@ function initializeMap() {
     
     // Add current location button
     addCurrentLocationButton();
+    
+    // Add Anytime Fitness toggle button
+    addAnytimeToggleButton();
+}
+
+// Initialize Anytime Fitness cluster
+function initializeAnytimeCluster() {
+    anytimeMarkerClusterGroup = L.markerClusterGroup({
+        chunkedLoading: true,
+        spiderfyOnMaxZoom: true,
+        showCoverageOnHover: false,
+        zoomToBoundsOnClick: true,
+        iconCreateFunction: function(cluster) {
+            return L.divIcon({
+                html: '<div style="background-color: #ff6b35; color: white; border-radius: 50%; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 12px; border: 2px solid white; box-shadow: 0 2px 5px rgba(0,0,0,0.3);">' + cluster.getChildCount() + '</div>',
+                className: 'anytime-cluster-icon',
+                iconSize: L.point(40, 40)
+            });
+        }
+    });
 }
 
 // Load gyms data from CSV
@@ -69,6 +93,26 @@ async function loadGymsData() {
         console.error('Error loading gyms data:', error);
         // Create sample data for demonstration
         createSampleData();
+    }
+}
+
+// Load Anytime Fitness data from CSV
+async function loadAnytimeGymsData() {
+    try {
+        const response = await fetch(`anytime-fitness-only.csv?v=${Date.now()}`);
+        const csvText = await response.text();
+        
+        if (csvText.trim()) {
+            anytimeGymsData = parseCSV(csvText);
+            console.log(`🏋️ エニタイムフィットネス専用データ読み込み完了: ${anytimeGymsData.length}店舗`);
+            
+            // エニタイム専用クラスターグループを初期化
+            initializeAnytimeCluster();
+        } else {
+            console.warn('anytime-fitness-only.csv file is empty or not found');
+        }
+    } catch (error) {
+        console.error('Error loading Anytime Fitness data:', error);
     }
 }
 
@@ -768,15 +812,46 @@ function displayDistanceBasedResults(gymsWithDistance, searchTerm, isFallback = 
     });
 }
 
+// Add Anytime Fitness toggle button
+function addAnytimeToggleButton() {
+    const AnytimeToggleControl = L.Control.extend({
+        onAdd: function(map) {
+            const container = L.DomUtil.create('div', 'leaflet-bar leaflet-control leaflet-control-custom');
+            container.style.backgroundColor = showAnytimeOnly ? '#ff6b35' : 'white';
+            container.style.width = '34px';
+            container.style.height = '34px';
+            container.style.cursor = 'pointer';
+            container.style.display = 'flex';
+            container.style.alignItems = 'center';
+            container.style.justifyContent = 'center';
+            container.style.fontSize = '14px';
+            container.style.fontWeight = 'bold';
+            container.style.color = showAnytimeOnly ? 'white' : '#ff6b35';
+            container.style.border = '2px solid #ff6b35';
+            container.innerHTML = 'AT';
+            container.title = 'エニタイムフィットネス専用表示';
+            
+            container.onclick = function(){
+                toggleAnytimeView();
+            };
+            
+            return container;
+        },
+        onRemove: function(map) {
+            // Nothing to do here
+        }
+    });
+    
+    const anytimeToggleControl = new AnytimeToggleControl({ position: 'topleft' });
+    anytimeToggleControl.addTo(map);
+}
+
 // Add current location button to map
 function addCurrentLocationButton() {
-    // Create custom control
     const CurrentLocationControl = L.Control.extend({
         onAdd: function(map) {
             const container = L.DomUtil.create('div', 'leaflet-bar leaflet-control leaflet-control-custom');
-            
             container.style.backgroundColor = 'white';
-            container.style.backgroundImage = 'none';
             container.style.width = '34px';
             container.style.height = '34px';
             container.style.cursor = 'pointer';
@@ -793,15 +868,97 @@ function addCurrentLocationButton() {
             
             return container;
         },
-        
         onRemove: function(map) {
             // Nothing to do here
         }
     });
     
-    // Add control to map
     const currentLocationControl = new CurrentLocationControl({ position: 'topleft' });
     currentLocationControl.addTo(map);
+}
+
+// Toggle Anytime Fitness view
+function toggleAnytimeView() {
+    showAnytimeOnly = !showAnytimeOnly;
+    
+    // Update button appearance
+    const button = document.querySelector('.leaflet-control-custom[title="エニタイムフィットネス専用表示"]');
+    if (button) {
+        button.style.backgroundColor = showAnytimeOnly ? '#ff6b35' : 'white';
+        button.style.color = showAnytimeOnly ? 'white' : '#ff6b35';
+    }
+    
+    // Clear existing markers
+    markerClusterGroup.clearLayers();
+    if (anytimeMarkerClusterGroup) {
+        map.removeLayer(anytimeMarkerClusterGroup);
+    }
+    
+    if (showAnytimeOnly) {
+        // Show only Anytime Fitness gyms
+        displayAnytimeGymsOnMap();
+        console.log('🏋️ エニタイムフィットネス専用表示に切り替えました');
+    } else {
+        // Show all gyms
+        displayGymsOnMap();
+        console.log('🏢 全ジム表示に切り替えました');
+    }
+}
+
+// Display Anytime Fitness gyms on map with special icons
+function displayAnytimeGymsOnMap() {
+    if (!anytimeGymsData || anytimeGymsData.length === 0) {
+        console.warn('エニタイムフィットネスデータが読み込まれていません');
+        return;
+    }
+    
+    markers = []; // Reset markers array
+    
+    anytimeGymsData.forEach(gym => {
+        const lat = parseFloat(gym.latitude);
+        const lng = parseFloat(gym.longitude);
+        
+        if (!isNaN(lat) && !isNaN(lng)) {
+            // Create custom Anytime Fitness icon
+            const anytimeIcon = L.divIcon({
+                className: 'anytime-marker',
+                html: `<div style="
+                    background-color: #ff6b35;
+                    color: white;
+                    border-radius: 50%;
+                    width: 25px;
+                    height: 25px;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    font-weight: bold;
+                    font-size: 10px;
+                    border: 2px solid white;
+                    box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+                    cursor: pointer;
+                ">AT</div>`,
+                iconSize: [25, 25],
+                iconAnchor: [12.5, 12.5]
+            });
+            
+            const marker = L.marker([lat, lng], { icon: anytimeIcon });
+            
+            // Create popup content
+            const popupContent = createGymPopup(gym);
+            marker.bindPopup(popupContent);
+            
+            // Add to cluster group
+            anytimeMarkerClusterGroup.addLayer(marker);
+            
+            // Store marker reference
+            markers.push({ marker, gym });
+        }
+    });
+    
+    // Add cluster group to map
+    map.addLayer(anytimeMarkerClusterGroup);
+    
+    console.log(`🎯 エニタイムフィットネス ${anytimeGymsData.length}店舗を地図に表示しました`);
 }
 
 // Get current location and show on map
