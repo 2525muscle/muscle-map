@@ -410,6 +410,30 @@ body {
     transform: translateY(-1px);
 }
 
+/* Custom Small Cluster Styles (5件以下のクラスター用) */
+.marker-cluster-small-group {
+    background: rgba(255, 193, 7, 0.8) !important;
+    border: 2px solid #ffc107 !important;
+}
+
+.marker-cluster-small-group div {
+    background: rgba(255, 193, 7, 0.9) !important;
+    border-radius: 15px !important;
+    color: #333 !important;
+    font-weight: bold !important;
+    font-size: 12px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    width: 30px !important;
+    height: 30px !important;
+}
+
+.marker-cluster-small-group div span {
+    color: #333 !important;
+    font-weight: bold !important;
+}
+
 /* Mobile Responsive */
 @media (max-width: 768px) {
     .header-content {

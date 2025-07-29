@@ -37,12 +37,49 @@ function initializeMap() {
         maxZoom: 22
     }).addTo(map);
     
-    // Initialize marker cluster group
+    // Initialize marker cluster group with custom clustering logic
+    // 5件以下は通常ピン、6件以上でクラスター表示
     markerClusterGroup = L.markerClusterGroup({
         chunkedLoading: true,
         spiderfyOnMaxZoom: true,
         showCoverageOnHover: false,
-        zoomToBoundsOnClick: true
+        zoomToBoundsOnClick: true,
+        // 高ズーム時にクラスター化を無効にして少数グループを個別表示
+        disableClusteringAtZoom: 18,
+        maxClusterRadius: function(zoom) {
+            // ズームレベルに応じてクラスター半径を調整
+            // 高ズームでは半径を小さくして5件以下のグループを作りにくくする
+            if (zoom >= 16) return 25;
+            if (zoom >= 14) return 40;
+            return 80;
+        },
+        iconCreateFunction: function(cluster) {
+            var childCount = cluster.getChildCount();
+            
+            // 5件以下の小さなクラスターは特別なスタイルで表示（少数グループ用）
+            if (childCount <= 5) {
+                return new L.DivIcon({
+                    html: '<div class="small-cluster"><span>' + childCount + '</span></div>',
+                    className: 'marker-cluster marker-cluster-small-group',
+                    iconSize: new L.Point(30, 30)
+                });
+            }
+            
+            var c = ' marker-cluster-';
+            if (childCount < 10) {
+                c += 'small';
+            } else if (childCount < 100) {
+                c += 'medium';
+            } else {
+                c += 'large';
+            }
+            
+            return new L.DivIcon({
+                html: '<div><span>' + childCount + '</span></div>',
+                className: 'marker-cluster' + c,
+                iconSize: new L.Point(40, 40)
+            });
+        }
     });
     
     map.addLayer(markerClusterGroup);
