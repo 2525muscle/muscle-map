@@ -446,22 +446,91 @@ function showGymDetails(gymName) {
     const website = gym.website ? gym.website : '公式サイトなし';
     const openingHours = gym.opening_hours || gym.openingHours || '営業時間情報なし';
     
-    // 営業時間を見やすく整形
+    // 営業時間を見やすく整形（曜日グループ化でコンパクト表示）
     const formatOpeningHours = (hours) => {
         if (hours === '営業時間情報なし') {
             return hours;
         }
         
-        // 改行コードやセミコロンで分割して整形
-        const formattedHours = hours
-            .replace(/;/g, '<br>')
-            .replace(/\n/g, '<br>')
-            .replace(/月曜日|火曜日|水曜日|木曜日|金曜日|土曜日|日曜日/g, '<br>$&')
-            .replace(/平日|土日|祝日/g, '<br>$&')
-            .replace(/^<br>/, '') // 先頭の改行を削除
-            .trim();
+        // 24時間営業などの簡単なケース
+        if (hours.includes('24時間') || hours.includes('24h') || hours === '24時間営業') {
+            return '24時間営業';
+        }
         
-        return formattedHours;
+        // 曜日別の営業時間をパース
+        const daySchedules = [];
+        const lines = hours.split(/[;\n]/).map(line => line.trim()).filter(line => line);
+        
+        lines.forEach(line => {
+            // 曜日パターンをマッチ
+            const dayMatch = line.match(/(月|火|水|木|金|土|日)曜?日?[：:]?\s*(.+)/);
+            if (dayMatch) {
+                const day = dayMatch[1];
+                const time = dayMatch[2].trim();
+                daySchedules.push({ day, time });
+            } else if (line.includes('平日')) {
+                const time = line.replace(/平日[：:]?\s*/, '').trim();
+                ['月', '火', '水', '木', '金'].forEach(day => {
+                    daySchedules.push({ day, time });
+                });
+            } else if (line.includes('土日') || line.includes('週末')) {
+                const time = line.replace(/(土日|週末)[：:]?\s*/, '').trim();
+                ['土', '日'].forEach(day => {
+                    daySchedules.push({ day, time });
+                });
+            }
+        });
+        
+        // 同じ時間帯の曜日をグループ化
+        const groupedSchedules = {};
+        daySchedules.forEach(({ day, time }) => {
+            if (!groupedSchedules[time]) {
+                groupedSchedules[time] = [];
+            }
+            groupedSchedules[time].push(day);
+        });
+        
+        // グループ化された結果を整形
+        const formattedGroups = [];
+        Object.entries(groupedSchedules).forEach(([time, days]) => {
+            const sortedDays = days.sort((a, b) => {
+                const dayOrder = ['月', '火', '水', '木', '金', '土', '日'];
+                return dayOrder.indexOf(a) - dayOrder.indexOf(b);
+            });
+            
+            // 連続する曜日をまとめる
+            const dayRanges = [];
+            let start = 0;
+            
+            for (let i = 1; i <= sortedDays.length; i++) {
+                const dayOrder = ['月', '火', '水', '木', '金', '土', '日'];
+                const currentIndex = dayOrder.indexOf(sortedDays[i]);
+                const prevIndex = dayOrder.indexOf(sortedDays[i - 1]);
+                
+                if (i === sortedDays.length || currentIndex !== prevIndex + 1) {
+                    if (i - 1 === start) {
+                        dayRanges.push(sortedDays[start]);
+                    } else {
+                        dayRanges.push(`${sortedDays[start]}～${sortedDays[i - 1]}`);
+                    }
+                    start = i;
+                }
+            }
+            
+            const dayText = dayRanges.join('・');
+            formattedGroups.push(`${dayText}: ${time}`);
+        });
+        
+        // グループ化できなかった場合は元の形式で表示
+        if (formattedGroups.length === 0) {
+            return hours
+                .replace(/;/g, '<br>')
+                .replace(/\n/g, '<br>')
+                .replace(/^<br>/, '')
+                .trim();
+        }
+        
+        return formattedGroups.join('<br>');
     };
     
     const formattedOpeningHours = formatOpeningHours(openingHours);

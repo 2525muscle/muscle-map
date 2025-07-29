@@ -296,14 +296,16 @@ body {
 
 .modal-content {
     background-color: white;
-    margin: 10% auto;
-    padding: 2rem;
+    margin: 5% auto;
+    padding: 1.5rem;
     border-radius: 12px;
     width: 90%;
-    max-width: 500px;
+    max-width: 480px;
+    max-height: 85vh;
     position: relative;
     box-shadow: 0 10px 30px rgba(0,0,0,0.3);
     animation: modalSlideIn 0.3s ease;
+    overflow-y: auto;
 }
 
 @keyframes modalSlideIn {
@@ -436,28 +438,29 @@ body {
 
 /* Opening Hours Section Styles */
 .opening-hours-section {
-    margin: 1rem 0;
-    padding: 0.75rem;
+    margin: 0.75rem 0;
+    padding: 0.5rem;
     background: #f8f9fa;
-    border-radius: 8px;
-    border-left: 4px solid #667eea;
+    border-radius: 6px;
+    border-left: 3px solid #667eea;
 }
 
 .opening-hours-section p {
-    margin-bottom: 0.5rem !important;
+    margin-bottom: 0.25rem !important;
     color: #333;
+    font-size: 0.95rem;
 }
 
 .opening-hours-content {
     background: white;
-    padding: 0.75rem;
+    padding: 0.5rem;
     border-radius: 4px;
     border: 1px solid #e9ecef;
-    font-family: 'Courier New', monospace;
-    font-size: 0.9rem;
-    line-height: 1.6;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    font-size: 0.85rem;
+    line-height: 1.4;
     color: #495057;
-    margin-top: 0.5rem;
+    margin-top: 0.25rem;
 }
 
 .opening-hours-content br {
