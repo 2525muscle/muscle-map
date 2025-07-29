@@ -446,26 +446,6 @@ function showGymDetails(gymName) {
     const website = gym.website ? gym.website : '公式サイトなし';
     const openingHours = gym.opening_hours || gym.openingHours || '営業時間情報なし';
     
-    // 営業時間を見やすく整形
-    const formatOpeningHours = (hours) => {
-        if (hours === '営業時間情報なし') {
-            return hours;
-        }
-        
-        // 改行コードやセミコロンで分割して整形
-        const formattedHours = hours
-            .replace(/;/g, '<br>')
-            .replace(/\n/g, '<br>')
-            .replace(/月曜日|火曜日|水曜日|木曜日|金曜日|土曜日|日曜日/g, '<br>$&')
-            .replace(/平日|土日|祝日/g, '<br>$&')
-            .replace(/^<br>/, '') // 先頭の改行を削除
-            .trim();
-        
-        return formattedHours;
-    };
-    
-    const formattedOpeningHours = formatOpeningHours(openingHours);
-    
     // Google評価ページへのリンクを作成
     const ratingDisplay = gym.rating && gym.placeId ? 
         `<a href="https://www.google.com/maps/place/?q=place_id:${gym.placeId}" target="_blank" rel="noopener noreferrer" style="color: #007bff; text-decoration: none;">${rating}</a>` : 
@@ -475,10 +455,7 @@ function showGymDetails(gymName) {
         <h3>🏋️ ${gym.name}</h3>
         <p><strong>📍 住所:</strong> ${gym.address}</p>
         <p><strong>📞 電話番号:</strong> ${phone}</p>
-        <div class="opening-hours-section">
-            <p><strong>🕒 営業時間:</strong></p>
-            <div class="opening-hours-content">${formattedOpeningHours}</div>
-        </div>
+        <p><strong>🕒 営業時間:</strong> ${openingHours}</p>
         <p><strong>⭐ 評価:</strong> ${ratingDisplay} ${ratingsCount}</p>
         <p><strong>🌐 公式サイト:</strong> ${website !== '公式サイトなし' ? `<a href="${website}" target="_blank" rel="noopener noreferrer">${website}</a>` : website}</p>
         <a href="${navUrl}" target="_blank" rel="noopener" class="nav-button">

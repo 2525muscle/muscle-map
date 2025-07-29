@@ -434,36 +434,6 @@ body {
     font-weight: bold !important;
 }
 
-/* Opening Hours Section Styles */
-.opening-hours-section {
-    margin: 1rem 0;
-    padding: 0.75rem;
-    background: #f8f9fa;
-    border-radius: 8px;
-    border-left: 4px solid #667eea;
-}
-
-.opening-hours-section p {
-    margin-bottom: 0.5rem !important;
-    color: #333;
-}
-
-.opening-hours-content {
-    background: white;
-    padding: 0.75rem;
-    border-radius: 4px;
-    border: 1px solid #e9ecef;
-    font-family: 'Courier New', monospace;
-    font-size: 0.9rem;
-    line-height: 1.6;
-    color: #495057;
-    margin-top: 0.5rem;
-}
-
-.opening-hours-content br {
-    margin-bottom: 0.25rem;
-}
-
 /* Mobile Responsive */
 @media (max-width: 768px) {
     .header-content {

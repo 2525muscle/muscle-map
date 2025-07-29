@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>岡山ジム地図 - Muscle Map</title>
+    <meta name="description" content="岡山県内のフィットネスジムを地図で簡単に探せるMuscle Map。初心者向けおすすめジム情報も掲載。">
+    
+    <!-- OGP Tags -->
+    <meta property="og:title" content="岡山ジム地図 - Muscle Map" />
+    <meta property="og:description" content="岡山県のジム情報がすぐ見つかる！地図で探してそのままナビも可能。" />
+    <meta property="og:image" content="https://yourdomain.com/ogp.jpg" />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://yourdomain.com/" />
+    
+    <!-- Leaflet CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    
+    <!-- Leaflet MarkerCluster CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.4.1/dist/MarkerCluster.css" />
+    <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.4.1/dist/MarkerCluster.Default.css" />
+    
+    <!-- Google AdSense Script Space -->
+    <!-- <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-XXXXXXXXXX" crossorigin="anonymous"></script> -->
+    
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- Header with Search and Menu -->
+    <header class="header">
+        <div class="header-content">
+            <h1 class="logo">🏋️ Muscle Map</h1>
+            <div class="search-container">
+                <input type="text" id="searchInput" placeholder="ジム名で検索..." />
+                <button id="searchBtn">🔍</button>
+            </div>
+            <button class="hamburger-menu" id="hamburgerMenu">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+        </div>
+    </header>
+
+    <!-- Navigation Menu -->
+    <nav class="nav-menu" id="navMenu">
+        <ul>
+            <li><a href="#" data-page="map">🏠 トップ（地図に戻る）</a></li>
+            <li><a href="#" data-page="columns">📖 おすすめジムコラム</a></li>
+            <li><a href="#" data-page="about">👤 運営者情報</a></li>
+            <li><a href="#" data-page="privacy">🔐 プライバシーポリシー</a></li>
+            <li><a href="#" data-page="contact">📩 お問い合わせ</a></li>
+        </ul>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <!-- Map Page -->
+        <div id="mapPage" class="page active">
+            <div id="map"></div>
+            
+            <!-- AdSense Banner -->
+            <div id="ad-banner" style="width:100%; text-align:center; margin: 1rem 0;">
+                <!-- AdSense広告コード挿入予定 -->
+                <div style="background: #f0f0f0; padding: 20px; border: 1px dashed #ccc;">
+                    AdSense広告エリア
+                </div>
+            </div>
+        </div>
+
+        <!-- Columns Page -->
+        <div id="columnsPage" class="page">
+            <div class="page-header">
+                <h2>📖 おすすめジムコラム</h2>
+            </div>
+            <div id="columns">
+                <article class="column-article">
+                    <h3>📝 初心者におすすめ！岡山の入りやすいジム3選</h3>
+                    <p>通いやすさ・清潔感・スタッフ対応を軸に、岡山県で初心者におすすめのジムを3つ紹介！</p>
+                    
+                    <div class="gym-recommendation">
+                        <h4>① エニタイムフィットネス岡山駅前店</h4>
+                        <p>24時間営業で通いやすく、清潔感のある施設。初心者向けのマシンも充実しており、スタッフのサポートも丁寧です。</p>
+                    </div>
+                    
+                    <div class="gym-recommendation">
+                        <h4>② JOYFIT岡山高柳</h4>
+                        <p>リーズナブルな料金設定で、初心者でも気軽に始められます。プールやスタジオプログラムも豊富。</p>
+                    </div>
+                    
+                    <div class="gym-recommendation">
+                        <h4>③ ゴールドジム岡山</h4>
+                        <p>本格的なトレーニング環境でありながら、初心者向けのサポートも充実。経験豊富なトレーナーが在籍。</p>
+                    </div>
+                </article>
+            </div>
+        </div>
+
+        <!-- About Page -->
+        <div id="aboutPage" class="page">
+            <div class="page-header">
+                <h2>👤 運営者情報</h2>
+            </div>
+            <div class="page-content">
+                <p><strong>運営者:</strong> クーパー</p>
+                <p><strong>所在地:</strong> 岡山県</p>
+                <p><strong>連絡先:</strong> example@example.com</p>
+                <p><strong>サイト概要:</strong> 岡山県内のフィットネスジム情報を地図上で分かりやすく表示し、利用者の健康的なライフスタイルをサポートすることを目的としています。</p>
+            </div>
+        </div>
+
+        <!-- Privacy Policy Page -->
+        <div id="privacyPage" class="page">
+            <div class="page-header">
+                <h2>🔐 プライバシーポリシー</h2>
+            </div>
+            <div class="page-content">
+                <h3>個人情報の取り扱いについて</h3>
+                <p>当サイトでは、利用者の個人情報を適切に保護し、以下の方針に従って取り扱います。</p>
+                
+                <h4>Cookie の使用について</h4>
+                <p>当サイトでは、サービスの向上のためにCookieを使用する場合があります。Cookieは利用者のブラウザに保存される小さなファイルで、個人を特定する情報は含まれません。</p>
+                
+                <h4>Google AdSense について</h4>
+                <p>当サイトでは、Google AdSenseを使用して広告を配信しています。Google AdSenseは、利用者の興味に基づいた広告を表示するためにCookieを使用する場合があります。</p>
+                
+                <h4>免責事項</h4>
+                <p>当サイトに掲載されている情報の正確性については万全を期しておりますが、情報が古い場合や誤りがある可能性があります。最新の情報については、各ジムの公式サイトをご確認ください。</p>
+            </div>
+        </div>
+
+        <!-- Contact Page -->
+        <div id="contactPage" class="page">
+            <div class="page-header">
+                <h2>📩 お問い合わせ</h2>
+            </div>
+            <div class="page-content">
+                <p>サイトに関するご質問、ジム情報の修正・追加依頼などがございましたら、以下のメールアドレスまでお気軽にお問い合わせください。</p>
+                <p><strong>メールアドレス:</strong> <a href="mailto:example@example.com">example@example.com</a></p>
+                
+                <div class="contact-form">
+                    <h3>簡易お問い合わせフォーム</h3>
+                    <form id="contactForm">
+                        <div class="form-group">
+                            <label for="contactName">お名前:</label>
+                            <input type="text" id="contactName" name="name" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="contactEmail">メールアドレス:</label>
+                            <input type="email" id="contactEmail" name="email" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="contactMessage">メッセージ:</label>
+                            <textarea id="contactMessage" name="message" rows="5" required></textarea>
+                        </div>
+                        <button type="submit">送信</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Gym Detail Modal -->
+    <div id="gymModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <div id="gymDetails"></div>
+        </div>
+    </div>
+
+    <!-- Leaflet JS -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    
+    <!-- Leaflet MarkerCluster JS -->
+    <script src="https://unpkg.com/leaflet.markercluster@1.4.1/dist/leaflet.markercluster.js"></script>
+    
+    <!-- Main Script -->
+    <script src="script.js"></script>
+</body>
+</html>
