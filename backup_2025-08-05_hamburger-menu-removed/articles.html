@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ジムコラム記事一覧 - 岡山ジム地図 Muscle Map</title>
+    <meta name="description" content="ジム初心者向けのコラム記事一覧。筋トレ・フィットネスに関する実用的な情報をお届けします。">
+    
+    <!-- Cache Busting -->
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    <meta name="version" content="2025-08-04-v3">
+    
+    <!-- OGP Tags -->
+    <meta property="og:title" content="ジムコラム記事一覧 - 岡山ジム地図 Muscle Map" />
+    <meta property="og:description" content="ジム初心者向けのコラム記事一覧。筋トレ・フィットネスに関する実用的な情報をお届けします。" />
+    <meta property="og:type" content="website" />
+    
+    <link rel="stylesheet" href="https://musclemap.jp/style.css?v=2025-08-04-v3">
+    <style>
+        .articles-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        .articles-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 30px;
+            margin-top: 30px;
+        }
+        
+        .article-card {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            overflow: hidden;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            text-decoration: none;
+            color: inherit;
+        }
+        
+        .article-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+            text-decoration: none;
+            color: inherit;
+        }
+        
+        .article-card-image {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+        }
+        
+        .article-card-content {
+            padding: 20px;
+        }
+        
+        .article-card-title {
+            font-size: 1.3em;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 12px;
+            line-height: 1.4;
+        }
+        
+        .article-card-summary {
+            color: #666;
+            line-height: 1.6;
+            margin-bottom: 15px;
+        }
+        
+        .article-card-meta {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.9em;
+            color: #888;
+        }
+        
+        .article-tag {
+            background: #6c5ce7;
+            color: white;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.8em;
+        }
+        
+        .back-to-map {
+            display: inline-block;
+            background: #6c5ce7;
+            color: white;
+            padding: 12px 24px;
+            border-radius: 8px;
+            text-decoration: none;
+            margin-bottom: 20px;
+            transition: background 0.3s ease;
+        }
+        
+        .back-to-map:hover {
+            background: #5a4fcf;
+            text-decoration: none;
+            color: white;
+        }
+        
+        @media (max-width: 768px) {
+            .articles-grid {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+            
+            .articles-container {
+                padding: 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="header-content">
+            <h1 class="logo">🏋️ Muscle Map</h1>
+        </div>
+    </header>
+
+    <main class="articles-container">
+        <a href="/index.html" class="back-to-map">← マップに戻る</a>
+        
+        <h1>📖 ジムコラム記事一覧</h1>
+        <p>ジム初心者向けの実用的なコラム記事をお届けします。気になる記事をクリックしてお読みください。</p>
+        
+        <div class="articles-grid">
+            <!-- Article 1 -->
+            <a href="/article1.html" class="article-card">
+                <img src="https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80" alt="ジム初心者向け - 現代的なジムの内観" class="article-card-image">
+                <div class="article-card-content">
+                    <h2 class="article-card-title">初めてのジム選びで迷ったら？初心者が安心して始められる方法</h2>
+                    <p class="article-card-summary">「筋トレを始めたいけど、ジムってどこを選べばいいの？」「ムキムキの人ばかりで入りづらそう…」初心者がジム選びで悩むのは当たり前のこと。この記事では、初めてでも安心して始められるジム選びのコツを実体験を交えて紹介します。</p>
+                    <div class="article-card-meta">
+                        <span class="article-tag">ジム選び</span>
+                        <span>約5分で読めます</span>
+                    </div>
+                </div>
+            </a>
+            
+            <!-- Article 2 -->
+            <a href="/article2.html" class="article-card">
+                <img src="https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80" alt="ベンチプレス - シンプルで効果的なトレーニング" class="article-card-image">
+                <div class="article-card-content">
+                    <h2 class="article-card-title">トレーニングが続かない時は、ベンチプレスだけを週2回やる方法</h2>
+                    <p class="article-card-summary">「筋トレが続かない…」そんな悩みを抱えていませんか？完璧を目指して三日坊主になるくらいなら、ベンチプレスだけでも続けた方がいい。シンプルで継続しやすいトレーニング方法をご紹介します。</p>
+                    <div class="article-card-meta">
+                        <span class="article-tag">継続のコツ</span>
+                        <span>約4分で読めます</span>
+                    </div>
+                </div>
+            </a>
+            
+            <!-- Article 3 -->
+            <a href="/article3.html" class="article-card">
+                <img src="https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80" alt="自宅トレーニング - 効果的な筋トレ" class="article-card-image">
+                <div class="article-card-content">
+                    <h2 class="article-card-title">自宅トレーニングで結果を出すための5つのコツ</h2>
+                    <p class="article-card-summary">ジムに通えない時でも、自宅で効果的なトレーニングは可能です。腕立て伏せ、スクワット、プランクの基本3種目を中心に、習慣化とルーティン作りのコツをお教えします。</p>
+                    <div class="article-card-meta">
+                        <span class="article-tag">自宅トレーニング</span>
+                        <span>約5分で読めます</span>
+                    </div>
+                </div>
+            </a>
+            
+            <!-- Article 4 -->
+            <a href="/article4.html" class="article-card">
+                <img src="https://images.unsplash.com/photo-1490645935967-10de6ba17061?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80" alt="筋トレ食事 - プロテインと栄養バランス" class="article-card-image">
+                <div class="article-card-content">
+                    <h2 class="article-card-title">筋トレ効果を最大化する食事のタイミングと内容</h2>
+                    <p class="article-card-summary">筋トレの効果を最大限に引き出すには、適切な食事が不可欠です。トレーニング前後の栄養摂取戦略や、プロテイン摂取の「ゴールデンタイム」について詳しく解説します。</p>
+                    <div class="article-card-meta">
+                        <span class="article-tag">栄養・食事</span>
+                        <span>約6分で読めます</span>
+                    </div>
+                </div>
+            </a>
+            
+            <!-- Article 5 -->
+            <a href="/article5.html" class="article-card">
+                <img src="https://images.unsplash.com/photo-1517836357463-d25dfeac3438?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80" alt="モチベーション維持 - 継続の重要性" class="article-card-image">
+                <div class="article-card-content">
+                    <h2 class="article-card-title">モチベーションが下がった時の対処法と継続のコツ</h2>
+                    <p class="article-card-summary">筋トレを続けていると、必ずモチベーションが下がる時期があります。小さな目標設定、記録の重要性、仲間作り、適度な休息など、継続するための具体的な方法をご紹介します。</p>
+                    <div class="article-card-meta">
+                        <span class="article-tag">モチベーション</span>
+                        <span>約5分で読めます</span>
+                    </div>
+                </div>
+            </a>
+        </div>
+    </main>
+</body>
+</html>

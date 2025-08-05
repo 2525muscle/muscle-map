@@ -13,15 +13,6 @@ document.addEventListener('DOMContentLoaded', function() {
     loadGymsData(); // エニタイムフィットネスを含む全ジムデータを読み込み
     setupEventListeners();
     
-    // 動的メニューシステムの初期化
-    if (window.MenuSystem && window.menuConfig) {
-        const menuSystem = new MenuSystem();
-        menuSystem.init();
-        
-        // グローバルに公開（デバッグ用）
-        window.currentMenuSystem = menuSystem;
-    }
-    
     // Handle browser back/forward buttons
     window.addEventListener('popstate', function(event) {
         if (event.state && event.state.page) {
