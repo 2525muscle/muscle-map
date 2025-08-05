@@ -560,28 +560,7 @@ function showGymDetails(gymName) {
 
 // Setup event listeners
 function setupEventListeners() {
-    // Hamburger menu
-    const hamburgerMenu = document.getElementById('hamburgerMenu');
-    const navMenu = document.getElementById('navMenu');
-    
-    hamburgerMenu.addEventListener('click', function() {
-        hamburgerMenu.classList.toggle('active');
-        navMenu.classList.toggle('active');
-    });
-    
-    // Navigation menu items
-    const navLinks = document.querySelectorAll('.nav-menu a');
-    navLinks.forEach(link => {
-        link.addEventListener('click', function(e) {
-            e.preventDefault();
-            const page = this.getAttribute('data-page');
-            showPage(page, true);
-            
-            // Close menu on mobile
-            hamburgerMenu.classList.remove('active');
-            navMenu.classList.remove('active');
-        });
-    });
+
     
     // Search functionality
     const searchInput = document.getElementById('searchInput');
@@ -629,13 +608,7 @@ function setupEventListeners() {
         alert('メールクライアントが開きます。送信を完了してください。');
     });
     
-    // Close menu when clicking outside
-    document.addEventListener('click', function(e) {
-        if (!navMenu.contains(e.target) && !hamburgerMenu.contains(e.target)) {
-            hamburgerMenu.classList.remove('active');
-            navMenu.classList.remove('active');
-        }
-    });
+
 }
 
 // Show specific page
