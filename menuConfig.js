@@ -18,7 +18,7 @@ const menuConfig = {
             name: '📖 おすすめジムコラム',
             route: 'articles.html',
             type: 'external',
-            visible: true,
+            visible: false, // 一時的に非表示
             order: 2,
             // 将来のカテゴリ階層対応
             children: [
