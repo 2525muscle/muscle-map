@@ -42,4 +42,10 @@
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
+  <url>
+    <loc>https://okayama-gym-map-fixed.windsurf.build/privacy.html</loc>
+    <lastmod>2025-08-06</lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.5</priority>
+  </url>
 </urlset>
