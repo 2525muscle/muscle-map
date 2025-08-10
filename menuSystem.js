@@ -123,10 +123,33 @@ class MenuSystem {
             });
         });
 
+        // iPhone向け閉じるボタン機能（CSSの::afterで作成される×ボタン）
+        if (this.menuContainer) {
+            this.menuContainer.addEventListener('click', (e) => {
+                // メニューの右上エリア（×ボタン位置）をクリックした場合
+                const rect = this.menuContainer.getBoundingClientRect();
+                const clickX = e.clientX - rect.left;
+                const clickY = e.clientY - rect.top;
+                
+                // 右上の×ボタンエリア（右端から80px、上から80px以内）
+                if (clickX > rect.width - 80 && clickY < 80) {
+                    this.closeMenu();
+                    e.stopPropagation();
+                }
+            });
+        }
+
         // 外部クリックでメニューを閉じる
         document.addEventListener('click', (e) => {
             if (this.config.settings.hamburger.closeOnClick) {
                 this.handleOutsideClick(e);
+            }
+        });
+
+        // ESCキーでメニューを閉じる（iPhone向け追加機能）
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                this.closeMenu();
             }
         });
     }
