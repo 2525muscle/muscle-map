@@ -620,34 +620,27 @@ function setupEventListeners() {
 
 }
 
-// Show specific page (Safari互換性対応)
-function showPage(pageId, addToHistory) {
-    // デフォルト引数をSafari互換に
-    if (typeof addToHistory === 'undefined') {
-        addToHistory = true;
-    }
-    
+// Show specific page
+function showPage(pageId, addToHistory = true) {
     // Hide all pages
-    var pages = document.querySelectorAll('.page');
-    for (var i = 0; i < pages.length; i++) {
-        pages[i].classList.remove('active');
-    }
+    const pages = document.querySelectorAll('.page');
+    pages.forEach(page => page.classList.remove('active'));
     
     // Show selected page
-    var targetPage = document.getElementById(pageId + 'Page');
+    const targetPage = document.getElementById(pageId + 'Page');
     if (targetPage) {
         targetPage.classList.add('active');
         currentPage = pageId;
         
         // Add to browser history
         if (addToHistory) {
-            var url = pageId === 'map' ? '/' : '/#' + pageId;
+            const url = pageId === 'map' ? '/' : `/#${pageId}`;
             history.pushState({ page: pageId }, '', url);
         }
         
         // Refresh map if returning to map page
         if (pageId === 'map') {
-            setTimeout(function() {
+            setTimeout(() => {
                 map.invalidateSize();
             }, 100);
         }
