@@ -5,8 +5,8 @@ const menuConfig = {
     // メニュー項目の定義
     items: [
         {
-            id: 'home',
-            name: '🏠 トップ',
+            id: 'map',
+            name: 'ジム検索MAP',
             route: '#',
             page: 'map',
             type: 'page',
@@ -14,8 +14,8 @@ const menuConfig = {
             order: 1
         },
         {
-            id: 'columns',
-            name: '📖 おすすめジムコラム',
+            id: 'articles',
+            name: 'ジムコラム',
             route: 'articles.html',
             type: 'external',
             visible: true, // 復活
@@ -44,35 +44,32 @@ const menuConfig = {
         },
         {
             id: 'about',
-            name: '👤 運営者情報',
+            name: '運営者情報',
             route: '#',
             page: 'about',
             type: 'page',
             visible: true,
             order: 3,
-            // AdSense審査必須項目
             adsenseRequired: true
         },
         {
             id: 'privacy',
-            name: '🔐 プライバシーポリシー',
+            name: 'プライバシーポリシー',
             route: '#',
             page: 'privacy',
             type: 'page',
             visible: true,
             order: 4,
-            // AdSense審査必須項目
             adsenseRequired: true
         },
         {
             id: 'contact',
-            name: '📩 お問い合わせ',
+            name: 'お問い合わせ',
             route: '#',
             page: 'contact',
             type: 'page',
             visible: true,
             order: 5,
-            // AdSense審査必須項目
             adsenseRequired: true
         }
     ],
