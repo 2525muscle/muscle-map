@@ -87,6 +87,18 @@ body {
     display: none;
 }
 
+/* Safari互換性対応 */
+.nav-btn {
+    -webkit-appearance: none;
+    -webkit-border-radius: 15px;
+    -webkit-transition: all 0.3s;
+}
+
+.page {
+    -webkit-transform: translateZ(0);
+    transform: translateZ(0);
+}
+
 /* Main Content */
 .main-content {
     margin-top: 80px;
