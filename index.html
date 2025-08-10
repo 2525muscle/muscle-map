@@ -31,8 +31,8 @@
     <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6268706602688502"
          crossorigin="anonymous"></script>
     
-    <link rel="stylesheet" href="style.css?v=2025-08-05-ULTIMATE-FIX">
-    <link rel="stylesheet" href="menuStyles.css?v=2025-08-05-DYNAMIC-MENU">
+    <link rel="stylesheet" href="style.css?v=menu-hide-search-1">
+    <link rel="stylesheet" href="menuStyles.css?v=menu-hide-search-1">
 </head>
 <body>
     <!-- Header with Search and Menu -->
@@ -505,12 +505,23 @@
     <script src="https://unpkg.com/leaflet.markercluster@1.4.1/dist/leaflet.markercluster.js"></script>
     
     <!-- Menu Configuration -->
-    <script src="menuConfig.js?v=2025-08-05-DYNAMIC-MENU"></script>
+    <script src="menuConfig.js?v=menu-hide-search-1"></script>
     
     <!-- Menu System -->
-    <script src="menuSystem.js?v=2025-08-05-DYNAMIC-MENU"></script>
+    <script src="menuSystem.js?v=menu-hide-search-1"></script>
     
     <!-- Main Script -->
-    <script src="script.js?v=2025-08-05-ULTIMATE-FIX"></script>
+    <script src="script.js?v=menu-hide-search-1"></script>
+    
+    <!-- Menu Page Detection Script -->
+    <script>
+      // メニュー画面判定とクラス付与
+      document.addEventListener('DOMContentLoaded', () => {
+        // トップページ（/）またはindex.htmlの場合にmenu-pageクラスを付与
+        if (location.pathname === '/' || location.pathname === '/index.html' || location.pathname.endsWith('index.html')) {
+          document.body.classList.add('menu-page');
+        }
+      });
+    </script>
 </body>
 </html>

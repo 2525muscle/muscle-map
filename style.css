@@ -658,3 +658,38 @@ body {
         font-size: 20px;
     }
 }
+
+/* メニュー画面では検索バーUIを隠す */
+.menu-page .search-bar,
+.menu-page .search-wrapper,
+.menu-page .search-input,
+.menu-page .search-container,
+.menu-page .search-clear,        /* ×ボタンなど */
+.menu-page .search-icon-wrapper { 
+  display: none !important;
+}
+
+/* ヘッダーの余白を調整（検索バーが無いぶん圧縮） */
+.menu-page .header {
+  padding-top: 10px !important;
+  padding-bottom: 12px !important;
+}
+
+/* Leafletコントロールを上に詰める（検索バー分を減らす） */
+.menu-page .leaflet-top.leaflet-left { 
+  top: 14px !important; 
+}
+
+/* マップ高さを少し拡大して見た目を整える */
+.menu-page #map,
+.menu-page .leaflet-container {
+  height: 50dvh !important;          /* 余白状況で 48–54dvh の範囲で微調整 */
+  margin-bottom: 20px !important;
+}
+
+/* 文字かぶり保険（継続） */
+h1,h2,h3,p,li,span,button,input {
+  line-height: 1.4 !important;
+  word-break: break-word !important;
+  overflow-wrap: anywhere !important;
+}
