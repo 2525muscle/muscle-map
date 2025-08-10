@@ -10,9 +10,10 @@ body {
     line-height: 1.6;
     color: #333;
     background-color: #f5f5f5;
-    /* iOS Safari 100vh問題対応 */
-    min-height: 100dvh;
+    /* iOS Safari スクロール問題対応 */
     min-height: 100vh;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
 }
 
 /* Header Styles */
@@ -84,10 +85,9 @@ body {
 /* Main Content */
 .main-content {
     margin-top: 80px;
-    min-height: calc(100dvh - 80px);
-    min-height: calc(100vh - 80px);
-    overflow-y: auto;
-    -webkit-overflow-scrolling: touch;
+    /* 高さ制限を削除してスクロール可能に */
+    min-height: auto;
+    padding-bottom: 2rem;
 }
 
 .page {
@@ -100,7 +100,7 @@ body {
 
 /* Map Styles */
 #map {
-    height: 70vh;
+    height: 400px; /* 固定高さに変更 */
     width: calc(100% - 2rem);
     border-radius: 8px;
     margin: 1rem;
@@ -649,10 +649,11 @@ body {
     .main-content {
         padding: 1rem;
         margin-top: 120px; /* ヘッダー高さ調整 */
+        min-height: auto; /* 高さ制限削除 */
     }
     
     #map {
-        height: 60vh;
+        height: 350px; /* 固定高さでスクロール可能に */
         margin: 0.5rem 0;
         width: 100%;
     }
@@ -726,12 +727,12 @@ body {
     .main-content {
         margin-top: 120px;
         padding: 0.5rem;
-        overflow-y: auto;
-        -webkit-overflow-scrolling: touch;
+        min-height: auto; /* 高さ制限削除 */
+        padding-bottom: 3rem; /* 下部余白確保 */
     }
     
     #map {
-        height: 55vh;
+        height: 300px; /* 固定高さでスクロール問題解決 */
         width: 100%;
         margin: 0.5rem 0;
         border-radius: 4px;
@@ -765,7 +766,7 @@ body {
     }
     
     .page {
-        min-height: calc(100vh - 120px);
-        overflow-y: auto;
+        min-height: auto; /* 高さ制限削除でスクロール可能に */
+        padding-bottom: 2rem; /* 下部余白確保 */
     }
 }
