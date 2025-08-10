@@ -284,18 +284,27 @@
         height: auto;
     }
     
-    /* AdSense審査必須項目の強調をモバイル用に調整 */
-    .nav-menu a[data-id="about"],
-    .nav-menu a[data-id="privacy"],
-    .nav-menu a[data-id="contact"] {
-        border-left: none;
-        border: 2px solid #28a745;
+    /* 全メニュー項目を統一デザインに */
+    .nav-menu a {
+        border: 1px solid #e0e0e0;
     }
     
-    .nav-menu a[data-id="about"]:hover,
-    .nav-menu a[data-id="privacy"]:hover,
-    .nav-menu a[data-id="contact"]:hover {
+    .nav-menu a:hover,
+    .nav-menu a:active {
         border-color: white;
+    }
+    
+    /* メニュー表示時は地図コントロールを非表示 */
+    .nav-menu.active ~ #map .leaflet-control-zoom,
+    .nav-menu.active ~ #map .leaflet-marker-icon,
+    .nav-menu.active ~ #map .leaflet-marker-shadow {
+        display: none !important;
+    }
+    
+    /* メニュー表示時は地図全体を暗くする */
+    .nav-menu.active ~ #map {
+        filter: blur(2px) brightness(0.3);
+        pointer-events: none;
     }
 }
 
