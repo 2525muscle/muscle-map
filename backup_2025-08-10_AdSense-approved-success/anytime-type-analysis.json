@@ -1,0 +1,61 @@
+{
+  "timestamp": "2025-07-27T13:34:47.088Z",
+  "summary": {
+    "totalGyms": 3,
+    "withGymType": 3,
+    "withoutGymType": 0,
+    "gymTypePercentage": 100
+  },
+  "typeCounts": {
+    "establishment": 3,
+    "point_of_interest": 3,
+    "gym": 3,
+    "health": 3,
+    "spa": 1
+  },
+  "detailedResults": [
+    {
+      "name": "エニタイムフィットネス 岡山今店",
+      "placeId": "ChIJt9CdWrYHVDUR7WkLw2iOfLA",
+      "types": [
+        "establishment",
+        "point_of_interest",
+        "gym",
+        "health"
+      ],
+      "businessStatus": "OPERATIONAL",
+      "address": "日本、〒700-0975 岡山県岡山市北区今２丁目１−２５",
+      "hasGymType": true,
+      "allTypes": "establishment, point_of_interest, gym, health"
+    },
+    {
+      "name": "エニタイムフィットネス 倉敷笹沖店",
+      "placeId": "ChIJRQU5TEJXUTURn69pBmEvnOo",
+      "types": [
+        "gym",
+        "establishment",
+        "point_of_interest",
+        "health",
+        "spa"
+      ],
+      "businessStatus": "OPERATIONAL",
+      "address": "日本、〒710-0834 岡山県倉敷市笹沖１２４０−３",
+      "hasGymType": true,
+      "allTypes": "gym, establishment, point_of_interest, health, spa"
+    },
+    {
+      "name": "エニタイムフィットネス 岡山益野店",
+      "placeId": "ChIJrx6DzsAJVDURFL28c-tuDq8",
+      "types": [
+        "establishment",
+        "point_of_interest",
+        "gym",
+        "health"
+      ],
+      "businessStatus": "OPERATIONAL",
+      "address": "日本、〒704-8175 岡山県岡山市東区益野町１５−１ 1F 2F",
+      "hasGymType": true,
+      "allTypes": "establishment, point_of_interest, gym, health"
+    }
+  ]
+}

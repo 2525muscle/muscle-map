@@ -10,10 +10,6 @@ body {
     line-height: 1.6;
     color: #333;
     background-color: #f5f5f5;
-    /* iOS Safari スクロール問題対応 */
-    min-height: 100vh;
-    overflow-y: auto;
-    -webkit-overflow-scrolling: touch;
 }
 
 /* Header Styles */
@@ -82,17 +78,10 @@ body {
     background: rgba(255,255,255,0.2);
 }
 
-/* モバイルナビゲーション - デスクトップでは非表示 */
-.mobile-nav {
-    display: none;
-}
-
 /* Main Content */
 .main-content {
     margin-top: 80px;
-    /* 高さ制限を削除してスクロール可能に */
-    min-height: auto;
-    padding-bottom: 2rem;
+    min-height: calc(100vh - 80px);
 }
 
 .page {
@@ -105,13 +94,11 @@ body {
 
 /* Map Styles */
 #map {
-    height: 400px; /* 固定高さに変更 */
-    width: calc(100% - 2rem);
+    height: 70vh;
+    width: 100%;
     border-radius: 8px;
     margin: 1rem;
     box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-    position: relative;
-    z-index: 1;
 }
 
 /* Page Content Styles */
@@ -637,30 +624,15 @@ body {
     .header-content {
         flex-direction: column;
         gap: 1rem;
-        padding: 0.5rem 1rem;
     }
     
     .search-container {
         width: 100%;
-        max-width: none;
-        margin: 0;
-    }
-    
-    #searchInput {
-        width: 100%;
-        font-size: 16px; /* iOS zoom防止 */
+        max-width: 300px;
     }
     
     .main-content {
         padding: 1rem;
-        margin-top: 120px; /* ヘッダー高さ調整 */
-        min-height: auto; /* 高さ制限削除 */
-    }
-    
-    #map {
-        height: 350px; /* 固定高さでスクロール可能に */
-        margin: 0.5rem 0;
-        width: 100%;
     }
     
     .gym-card {
@@ -680,125 +652,9 @@ body {
     
     .column-article h1 {
         font-size: 24px;
-        line-height: 1.4;
-        word-wrap: break-word;
     }
     
     .column-article h2 {
         font-size: 20px;
-        line-height: 1.4;
-        word-wrap: break-word;
-    }
-}
-
-/* iPhone専用修正 (375px幅付近) */
-@media (max-width: 414px) {
-    .header {
-        padding: 0.5rem 0;
-        min-height: 140px; /* ナビゲーション分の高さ追加 */
-    }
-    
-    .header-content {
-        flex-direction: column;
-        gap: 0.5rem;
-        padding: 0.5rem;
-    }
-    
-    .logo {
-        font-size: 1.2rem;
-        text-align: center;
-        margin-bottom: 0.5rem;
-    }
-    
-    .search-container {
-        width: 100%;
-        padding: 0.3rem;
-        border-radius: 20px;
-    }
-    
-    /* 緊急追加：モバイル用ナビゲーション */
-    .mobile-nav {
-        display: flex !important;
-        justify-content: center;
-        gap: 0.5rem;
-        margin-top: 0.5rem;
-        width: 100%;
-    }
-    
-    .nav-btn {
-        background: rgba(255,255,255,0.2);
-        color: white;
-        border: none;
-        padding: 0.5rem 1rem;
-        border-radius: 15px;
-        font-size: 0.9rem;
-        cursor: pointer;
-        transition: all 0.3s;
-        backdrop-filter: blur(10px);
-    }
-    
-    .nav-btn:hover,
-    .nav-btn.active {
-        background: rgba(255,255,255,0.4);
-        transform: translateY(-1px);
-    }
-    
-    #searchInput {
-        width: 100%;
-        padding: 0.4rem 0.8rem;
-        font-size: 16px;
-        word-wrap: break-word;
-        overflow-wrap: break-word;
-    }
-    
-    #searchBtn {
-        padding: 0.4rem;
-        font-size: 1rem;
-    }
-    
-    .main-content {
-        margin-top: 160px; /* ナビゲーション分の高さ追加 */
-        padding: 0.5rem;
-        min-height: auto; /* 高さ制限削除 */
-        padding-bottom: 3rem; /* 下部余白確保 */
-    }
-    
-    #map {
-        height: 300px; /* 固定高さでスクロール問題解決 */
-        width: 100%;
-        margin: 0.5rem 0;
-        border-radius: 4px;
-        position: relative;
-        z-index: 1;
-    }
-    
-    /* Leafletコントロールの位置調整 */
-    .leaflet-control-zoom {
-        margin-top: 10px !important;
-        margin-right: 10px !important;
-    }
-    
-    .leaflet-control-attribution {
-        font-size: 10px !important;
-    }
-    
-    /* テキストの折り返し対応 */
-    .gym-card h3,
-    .column-article p,
-    .page-content p {
-        word-wrap: break-word;
-        overflow-wrap: break-word;
-        line-height: 1.5;
-    }
-    
-    /* スクロール可能エリアの確保 */
-    body {
-        overflow-y: auto;
-        -webkit-overflow-scrolling: touch;
-    }
-    
-    .page {
-        min-height: auto; /* 高さ制限削除でスクロール可能に */
-        padding-bottom: 2rem; /* 下部余白確保 */
     }
 }
